@@ -1,0 +1,38 @@
+[project]
+name = "esgvoc-backend"
+version = "0.1.0"
+description = "Python backend for the library ESGVOC"
+authors = [
+    {name = "Sébastien Gardoll", email = "sebastien@gardoll.fr"},
+    {name = "Guillaume Levavasseur", email = "guillaume.levavasseur@ipsl.fr"},
+    {name = "Laurent Troussellier", email = "laurent.troussellier@ipsl.fr"},
+]
+license = {file = ".LICENSE.txt"}
+
+dependencies = [
+    "esgvoc",
+    "fastapi>=0.115.8",
+    "uvicorn>=0.34.0",
+]
+readme = "README.md"
+requires-python = ">= 3.12, <3.13"
+
+[project.urls]
+Repository = "https://github.com/ESPRI-Mod/esgf-vocab-backend"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "mypy>=1.13.0",
+    "isort>=5.13.2",
+    "pre-commit>=4.1.0",
+    "ruff>=0.9.4",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
