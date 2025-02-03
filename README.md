@@ -1,6 +1,6 @@
-# ESVOCAB BACKEND
+# ESGVOC BACKEND
 
-Earth Science - VOCABulary
+Earth Science - VOCabulary backend
 
 ## How to contribute
 
