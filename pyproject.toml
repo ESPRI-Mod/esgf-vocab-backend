@@ -10,7 +10,7 @@ authors = [
 license = {file = ".LICENSE.txt"}
 
 dependencies = [
-    "esgvoc",
+    "esgvoc @ git+https://github.com/ESGF/esgf-vocab@integration",
     "fastapi>=0.115.8",
     "uvicorn>=0.34.0",
 ]
@@ -36,3 +36,6 @@ profile = "black"
 log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+
+[tool.rye.scripts]
+server.call = "esgvoc_backend.start:main"
