@@ -21,10 +21,9 @@ router = APIRouter(prefix="/universe")
 
 @router.get("/terms", summary="Get all the terms of the universe")
 async def get_terms_from_universe(
-    selected_term_fields: Annotated[
-        list[str] | None, Query(description="Selected term fields or null")
-    ] = None,
-) -> list[DataDescriptor]:
+    selected_term_fields: \
+        Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
+            -> list[DataDescriptor]:
     return universe.get_all_terms_in_universe(selected_term_fields=selected_term_fields)
 
 
@@ -36,6 +35,26 @@ async def find_terms_from_universe(
     return universe.find_terms_in_universe(term_id=term_id, settings=settings)
 
 
-@router.get("/data_descriptors", summary="Get all the data descriptor contexts")
+@router.get("/data_descriptors", summary="Get all the data descriptors")
 async def get_data_descriptors() -> list[str]:
     return universe.get_all_data_descriptors_in_universe()
+
+
+@router.get("/data_descriptors/find", summary="Find data descriptors in the universe")
+async def find_data_descriptors(
+    data_descriptor_id: Annotated[str, Query(description="The data descriptors to be found")],
+    settings: SearchSettings | None = None,
+) -> list[dict]:
+    return universe.find_data_descriptors_in_universe(data_descriptor_id=data_descriptor_id,
+                                                      settings=settings)
+
+
+@router.get("/data_descriptors/{data_descriptor_id}/terms",
+            summary="Get all terms of a given data descriptor")
+async def get_terms_from_data_descriptor(
+    data_descriptor_id: str, #Annotated[str, Path(description="The given data descriptor")],
+    selected_term_fields: \
+        Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
+                                                                            -> list[DataDescriptor]:
+    return universe.get_all_terms_in_data_descriptor(data_descriptor_id=data_descriptor_id,
+                                                     selected_term_fields=selected_term_fields)
