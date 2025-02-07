@@ -21,16 +21,16 @@ router = APIRouter(prefix="/universe")
 
 @router.get("/terms", summary="Get all terms of the universe")
 async def get_terms_in_universe(
-    selected_term_fields: \
-        Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-            -> list[DataDescriptor]:
+        selected_term_fields: \
+            Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
+                -> list[DataDescriptor]:
     return universe.get_all_terms_in_universe(selected_term_fields=selected_term_fields)
 
 
 @router.post("/terms/find", summary="Find terms in the universe")
 async def find_terms_in_universe(
-    term_id: Annotated[str, Query(description="The terms to be found")],
-    settings: SearchSettings | None = None) -> list[DataDescriptor]:
+        term_id: Annotated[str, Query(description="The terms to be found")],
+        settings: SearchSettings | None = None) -> list[DataDescriptor]:
     return universe.find_terms_in_universe(term_id=term_id, settings=settings)
 
 
@@ -41,8 +41,8 @@ async def get_data_descriptors() -> list[str]:
 
 @router.post("/data_descriptors/find", summary="Find data descriptors in the universe")
 async def find_data_descriptors(
-    data_descriptor_id: Annotated[str, Query(description="The data descriptors to be found")],
-    settings: SearchSettings | None = None) -> list[dict]:
+        data_descriptor_id: Annotated[str, Query(description="The data descriptors to be found")],
+        settings: SearchSettings | None = None) -> list[dict]:
     return universe.find_data_descriptors_in_universe(data_descriptor_id=data_descriptor_id,
                                                       settings=settings)
 
@@ -50,9 +50,9 @@ async def find_data_descriptors(
 @router.get("/data_descriptors/{data_descriptor_id}/terms",
             summary="Get all terms of a given data descriptor")
 async def get_terms_in_data_descriptor(
-    data_descriptor_id: Annotated[str, Path(description="The given data descriptor")],
-    selected_term_fields: \
-        Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
+        data_descriptor_id: Annotated[str, Path(description="The given data descriptor")],
+        selected_term_fields: \
+            Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
                                                                             -> list[DataDescriptor]:
     return universe.get_all_terms_in_data_descriptor(data_descriptor_id=data_descriptor_id,
                                                      selected_term_fields=selected_term_fields)
@@ -61,9 +61,9 @@ async def get_terms_in_data_descriptor(
 @router.post("/data_descriptors/{data_descriptor_id}/terms/find",
              summary="Find terms in a given data descriptor")
 async def find_terms_in_data_descriptors(
-    data_descriptor_id: Annotated[str, Path(description="The given data descriptor")],
-    term_id: Annotated[str, Query(description="The terms to be found")],
-    settings: SearchSettings | None = None) -> list[DataDescriptor]:
+        data_descriptor_id: Annotated[str, Path(description="The given data descriptor")],
+        term_id: Annotated[str, Query(description="The terms to be found")],
+        settings: SearchSettings | None = None) -> list[DataDescriptor]:
     return universe.find_terms_in_data_descriptor(data_descriptor_id=data_descriptor_id,
                                                   term_id=term_id,
                                                   settings=settings)
