@@ -5,7 +5,7 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.projects import MatchingTerm
 from esgvoc.api.report import ValidationReport
 from esgvoc.api.search import SearchSettings
-from fastapi import APIRouter, Path, Query
+from fastapi import APIRouter, HTTPException, Path, Query, status
 
 router = APIRouter(prefix="/projects")
 
@@ -98,7 +98,10 @@ async def find_terms_in_project(
 async def valid_term_in_project(
         project_id: Annotated[str, Path(description='The given project')],
         value: Annotated[str, Query(description='The value to be validated')]) -> list[MatchingTerm]:
-    return projects.valid_term_in_project(value=value, project_id=project_id)
+    try:
+        return projects.valid_term_in_project(value=value, project_id=project_id)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
 @router.post("/{project_id}/terms/cross", summary="Find terms according to a given data descriptor in a given project")
@@ -159,10 +162,12 @@ async def valid_term_in_collection(
         value: Annotated[str, Query(description='The value to be validated')],
         term_id: Annotated[str|None, Query(description='A specific term')] = None) \
                                                              -> list[MatchingTerm]|ValidationReport:
-    if term_id:
-        return projects.valid_term(value=value, project_id=project_id, collection_id=collection_id,
-                                   term_id=term_id)
-    else:
-
-        return projects.valid_term_in_collection(value=value, project_id=project_id,
-                                                 collection_id=collection_id)
+    try:
+        if term_id:
+            return projects.valid_term(value=value, project_id=project_id,
+                                       collection_id=collection_id, term_id=term_id)
+        else:
+            return projects.valid_term_in_collection(value=value, project_id=project_id,
+                                                     collection_id=collection_id)
+    except ValueError as e:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
