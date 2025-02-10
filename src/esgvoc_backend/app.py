@@ -3,6 +3,7 @@ import os
 
 from fastapi import FastAPI
 
+import esgvoc_backend.drs as drs
 import esgvoc_backend.projects as projects
 import esgvoc_backend.universe as universe
 
@@ -17,6 +18,7 @@ def create_app() -> FastAPI:
     app = FastAPI()
     app.include_router(universe.router)
     app.include_router(projects.router)
+    app.include_router(drs.router)
     return app
 
 
