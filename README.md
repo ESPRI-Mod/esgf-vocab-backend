@@ -4,23 +4,40 @@ Earth Science - VOCabulary backend
 
 ## How to contribute
 
-### Python environment
+### Install Python dev environment
+
+* Pip
 
 ```bash
 pip install -e .
 ```
 
+* Rye
+
+```bash
+rye sync
+```
+
 ### Linters & code formatters
 
-* If using rye:
+* Pip
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+* Rye
 
 ```bash
 rye install
 rye run pre-commit install
 ```
-* Otherwise:
+
+### Start API server
+
+* Rye
 
 ```bash
-pip install pre-commit
-pre-commit install
+rye run server
 ```
