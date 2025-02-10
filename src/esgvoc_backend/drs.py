@@ -3,7 +3,7 @@ from typing import Annotated
 import esgvoc.api.projects as projects
 from esgvoc.api.project_specs import DrsType
 from esgvoc.apps.drs.generator import DrsGenerator
-from esgvoc.apps.drs.report import DrsGeneratorReport, DrsValidationReport
+from esgvoc.apps.drs.report import DrsGenerationReport, DrsValidationReport
 from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import APIRouter, HTTPException, Path, Query, status
 
@@ -20,7 +20,7 @@ del project_ids_available
 
 
 def _generate_from_mapping(project_id: str, drs_type: DrsType,
-                           mapping: dict[str, str]) -> DrsGeneratorReport:
+                           mapping: dict[str, str]) -> DrsGenerationReport:
     if project_id in _GENERATORS:
         return _GENERATORS[project_id].generate_from_mapping(mapping=mapping, drs_type=drs_type)
     else:
@@ -29,7 +29,7 @@ def _generate_from_mapping(project_id: str, drs_type: DrsType,
 
 
 def _generate_from_terms(project_id: str, drs_type: DrsType,
-                         terms: list[str]) -> DrsGeneratorReport:
+                         terms: list[str]) -> DrsGenerationReport:
     if project_id in _GENERATORS:
         return _GENERATORS[project_id].generate_from_bag_of_terms(terms=terms,
                                                                   drs_type=drs_type)
@@ -79,7 +79,7 @@ async def valid_dataset_id(
                     'collections and terms')
 async def generate_directory_from_mapping(
         project_id: Annotated[str, Path(description="The given project")],
-        mapping: dict[str, str]) -> DrsGeneratorReport:
+        mapping: dict[str, str]) -> DrsGenerationReport:
     return _generate_from_mapping(project_id=project_id, drs_type=DrsType.DIRECTORY, mapping=mapping)
 
 
@@ -88,7 +88,7 @@ async def generate_directory_from_mapping(
                     'collections and terms')
 async def generate_file_name_from_mapping(
         project_id: Annotated[str, Path(description="The given project")],
-        mapping: dict[str, str]) -> DrsGeneratorReport:
+        mapping: dict[str, str]) -> DrsGenerationReport:
     return _generate_from_mapping(project_id=project_id, drs_type=DrsType.FILE_NAME, mapping=mapping)
 
 
@@ -97,7 +97,7 @@ async def generate_file_name_from_mapping(
                     'collections and terms')
 async def generate_dataset_id_from_mapping(
         project_id: Annotated[str, Path(description="The given project")],
-        mapping: dict[str, str]) -> DrsGeneratorReport:
+        mapping: dict[str, str]) -> DrsGenerationReport:
     return _generate_from_mapping(project_id=project_id, drs_type=DrsType.DATASET_ID, mapping=mapping)
 
 
@@ -105,7 +105,7 @@ async def generate_dataset_id_from_mapping(
             summary='Generate a DRS directory path for a given project from a bag of terms')
 async def generate_directory_from_terms(
         project_id: Annotated[str, Path(description="The given project")],
-        terms: list[str]) -> DrsGeneratorReport:
+        terms: list[str]) -> DrsGenerationReport:
     return _generate_from_terms(project_id=project_id, drs_type=DrsType.DIRECTORY, terms=terms)
 
 
@@ -113,7 +113,7 @@ async def generate_directory_from_terms(
             summary='Generate a DRS file name for a given project from a bag of terms')
 async def generate_file_name_from_terms(
         project_id: Annotated[str, Path(description="The given project")],
-        terms: list[str]) -> DrsGeneratorReport:
+        terms: list[str]) -> DrsGenerationReport:
     return _generate_from_terms(project_id=project_id, drs_type=DrsType.FILE_NAME, terms=terms)
 
 
@@ -121,5 +121,5 @@ async def generate_file_name_from_terms(
             summary='Generate a DRS dataset id for a given project from a bag of terms')
 async def generate_dataset_id_from_terms(
         project_id: Annotated[str, Path(description="The given project")],
-        terms: list[str]) -> DrsGeneratorReport:
+        terms: list[str]) -> DrsGenerationReport:
     return _generate_from_terms(project_id=project_id, drs_type=DrsType.DATASET_ID, terms=terms)
