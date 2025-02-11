@@ -74,7 +74,7 @@ async def valid_dataset_id(
     return _validate(project_id=project_id, drs_type=DrsType.DATASET_ID, expression=expression)
 
 
-@router.post('/{project_id/generation/mapping/directory}',
+@router.post('/{project_id}/generation/mapping/directory',
             summary='Generate a DRS directory path for a given project from a mapping of ' + \
                     'collections and terms')
 async def generate_directory_from_mapping(
@@ -83,7 +83,7 @@ async def generate_directory_from_mapping(
     return _generate_from_mapping(project_id=project_id, drs_type=DrsType.DIRECTORY, mapping=mapping)
 
 
-@router.post('/{project_id/generation/mapping/filename}',
+@router.post('/{project_id}/generation/mapping/filename',
             summary='Generate a DRS file name for a given project from a mapping of ' + \
                     'collections and terms')
 async def generate_file_name_from_mapping(
@@ -92,7 +92,7 @@ async def generate_file_name_from_mapping(
     return _generate_from_mapping(project_id=project_id, drs_type=DrsType.FILE_NAME, mapping=mapping)
 
 
-@router.post('/{project_id/generation/mapping/datasetid}',
+@router.post('/{project_id}/generation/mapping/datasetid',
             summary='Generate a DRS dataset id for a given project from a mapping of ' + \
                     'collections and terms')
 async def generate_dataset_id_from_mapping(
@@ -101,7 +101,7 @@ async def generate_dataset_id_from_mapping(
     return _generate_from_mapping(project_id=project_id, drs_type=DrsType.DATASET_ID, mapping=mapping)
 
 
-@router.post('/{project_id/generation/terms/directory}',
+@router.post('/{project_id}/generation/terms/directory',
             summary='Generate a DRS directory path for a given project from a bag of terms')
 async def generate_directory_from_terms(
         project_id: Annotated[str, Path(description="The given project")],
@@ -109,7 +109,7 @@ async def generate_directory_from_terms(
     return _generate_from_terms(project_id=project_id, drs_type=DrsType.DIRECTORY, terms=terms)
 
 
-@router.post('/{project_id/generation/terms/filename}',
+@router.post('/{project_id}/generation/terms/filename',
             summary='Generate a DRS file name for a given project from a bag of terms')
 async def generate_file_name_from_terms(
         project_id: Annotated[str, Path(description="The given project")],
@@ -117,7 +117,7 @@ async def generate_file_name_from_terms(
     return _generate_from_terms(project_id=project_id, drs_type=DrsType.FILE_NAME, terms=terms)
 
 
-@router.post('/{project_id/generation/terms/datasetid}',
+@router.post('/{project_id}/generation/terms/datasetid',
             summary='Generate a DRS dataset id for a given project from a bag of terms')
 async def generate_dataset_id_from_terms(
         project_id: Annotated[str, Path(description="The given project")],
