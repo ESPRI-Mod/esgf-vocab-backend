@@ -1,5 +1,4 @@
 import logging
-import os
 from collections.abc import Callable
 from typing import Annotated, Any
 
@@ -109,11 +108,7 @@ def create_project_term_routes():
 
 
 ######################## MAIN #######################
-# Set the root level at INFO (ESGVOC set it at ERROR).
-logging.getLogger().setLevel(logging.INFO)
-_LOGGER.info(f'pid {os.getpid()} init caches')
 init_universe_cache()
 init_projects_cache()
-_LOGGER.info(f'pid {os.getpid()} create URI routes')
 create_universe_term_routes()
 create_project_term_routes()
