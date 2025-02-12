@@ -1,4 +1,3 @@
-import logging
 from collections.abc import Callable
 from typing import Annotated, Any
 
@@ -7,21 +6,20 @@ import esgvoc.api.universe as universe
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from fastapi import APIRouter, Header, HTTPException, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
-
-_LOGGER = logging.getLogger("uris")
 
 router = APIRouter()
 
-_UNIVERSE_CACHE:dict[str, dict[str, DataDescriptor]] = dict()
-_PROJECTS_CACHE:dict[str, dict[str, dict[str, DataDescriptor]]] = dict()
+_UNIVERSE_CACHE:dict[str, dict[str, tuple[str, dict]]] = dict()
+_PROJECTS_CACHE:dict[str, dict[str, dict[str, tuple[str, dict]]]] = dict()
 
 def init_universe_cache() -> None:
     data_descriptors = universe.get_all_data_descriptors_in_universe()
     for data_descriptor in data_descriptors:
         _UNIVERSE_CACHE[data_descriptor] = dict()
         for term in universe.get_all_terms_in_data_descriptor(data_descriptor):
-            _UNIVERSE_CACHE[data_descriptor][term.id] = term
+            _UNIVERSE_CACHE[data_descriptor][term.id] = jsonable_encoder(term), from_json_to_html(term)
 
 
 def init_projects_cache() -> None:
@@ -32,7 +30,7 @@ def init_projects_cache() -> None:
         for collection in collections:
             _PROJECTS_CACHE[project][collection] = dict()
             for term in projects.get_all_terms_in_collection(project, collection):
-                _PROJECTS_CACHE[project][collection][term.id] = term
+                _PROJECTS_CACHE[project][collection][term.id] = jsonable_encoder(term), from_json_to_html(term)
 
 
 def to_str(value: list | dict | Any) -> str:
@@ -52,19 +50,19 @@ def to_str(value: list | dict | Any) -> str:
     return result
 
 
-def from_json_to_html(json_obj: DataDescriptor) -> str:
+def from_json_to_html(term: DataDescriptor) -> str:
     result = "<!DOCTYPE html>\n<html>\n<body>\n<ul>\n"
-    for key, value in json_obj.model_dump().items():
+    for key, value in term.model_dump().items():
         result += f"<li>{key}: {to_str(value)}</li>\n"
     result += "</ul>\n</body>\n</html>"
     return result
 
 
-def format_term(term: DataDescriptor, accept_type: str | None) -> JSONResponse | HTMLResponse:
+def format_term(term: tuple[str, dict], accept_type: str | None) -> JSONResponse | HTMLResponse:
     if accept_type is not None and "application/json" in accept_type:
-        return JSONResponse(term.model_dump())
+        return JSONResponse(content=term[0])
     else:
-        return HTMLResponse(from_json_to_html(term))
+        return HTMLResponse(term[1])
 
 
 def create_universe_term_end_point(data_descriptor_id: str) -> Callable:
