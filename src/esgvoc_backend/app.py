@@ -11,8 +11,8 @@ import esgvoc_backend.universe as universe
 def initialization():
     # Set the root level at INFO (ESGVOC set it at ERROR).
     logging.getLogger().setLevel(logging.INFO)
-    _LOGGER = logging.getLogger("app")
-    _LOGGER.info(f"initialization of process {os.getpid()}")
+    logger = logging.getLogger("app")
+    logger.info(f"initialization of process {os.getpid()}")
 
 def create_app() -> FastAPI:
     app = FastAPI()

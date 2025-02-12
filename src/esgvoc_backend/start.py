@@ -1,9 +1,9 @@
 import logging
 import os
 
-import uvicorn
-
 # This import the logging settings of the library ESGVOC.
+import esgvoc.core  # noqa
+import uvicorn
 
 _DEFAULT_NB_WORKERS = 1
 _UVICORN_WORKERS_VAR_ENV_NAME = "WEB_CONCURRENCY"
