@@ -1,0 +1,18 @@
+name: esgvoc-backend
+
+services:
+    latest:
+        image: esgvoc-backend:latest
+        ports:
+            - 80:9999
+        environment:
+            - WEB_CONCURRENCY=5
+        build: .
+
+    test:
+        extends: latest
+        image: esgvoc-backend:test
+        ports: !override
+            - 8080:9999
+        environment: !override
+            - WEB_CONCURRENCY=1
