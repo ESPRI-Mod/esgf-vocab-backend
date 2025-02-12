@@ -62,7 +62,7 @@ def from_json_to_html(json_obj: DataDescriptor) -> str:
 
 def format_term(term: DataDescriptor, accept_type: str | None) -> JSONResponse | HTMLResponse:
     if accept_type is not None and "application/json" in accept_type:
-        return JSONResponse(term.model_dump_json())
+        return JSONResponse(term.model_dump())
     else:
         return HTMLResponse(from_json_to_html(term))
 
