@@ -1,6 +1,7 @@
 from typing import Annotated
 
 import esgvoc.api.projects as projects
+from esgvoc.api import APIException
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.projects import MatchingTerm
@@ -63,7 +64,10 @@ async def find_terms_in_all_projects(
 @router.get("/terms/valid", summary="Valid term against all terms of in all projects")
 async def valid_term_in_all_projects(
         value: Annotated[str, Query(description='The value to be validated')]) -> list[MatchingTerm]:
-    return projects.valid_term_in_all_projects(value)
+    try:
+        return projects.valid_term_in_all_projects(value)
+    except APIException as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @router.post("/terms/cross", summary="Find terms according to a given data descriptor in all projects")
@@ -101,8 +105,8 @@ async def valid_term_in_project(
         value: Annotated[str, Query(description='The value to be validated')]) -> list[MatchingTerm]:
     try:
         return projects.valid_term_in_project(value=value, project_id=project_id)
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except APIException as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @router.post("/{project_id}/terms/cross", summary="Find terms according to a given data descriptor in a given project")
@@ -170,5 +174,5 @@ async def valid_term_in_collection(
         else:
             return projects.valid_term_in_collection(value=value, project_id=project_id,
                                                      collection_id=collection_id)
-    except ValueError as e:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except APIException as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
