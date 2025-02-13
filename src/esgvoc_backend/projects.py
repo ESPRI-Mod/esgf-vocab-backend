@@ -2,6 +2,7 @@ from typing import Annotated
 
 import esgvoc.api.projects as projects
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.project_specs import ProjectSpecs
 from esgvoc.api.projects import MatchingTerm
 from esgvoc.api.report import ValidationReport
 from esgvoc.api.search import SearchSettings
@@ -40,7 +41,7 @@ async def get_projects() -> list[str]:
 
 @router.get("/find", summary="Find projects")
 async def find_projects(
-        project_id: Annotated[str, Query(description="The project to be found")])-> dict|None:
+        project_id: Annotated[str, Query(description="The project to be found")])-> ProjectSpecs|None:
     return projects.find_project(project_id=project_id)
 
 
