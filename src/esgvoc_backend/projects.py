@@ -40,7 +40,7 @@ async def get_projects() -> list[str]:
 
 
 @router.get("/find", summary="Find projects")
-async def find_projects(
+async def find_project(
         project_id: Annotated[str, Query(description="The project to be found")])-> ProjectSpecs|None:
     return projects.find_project(project_id=project_id)
 
