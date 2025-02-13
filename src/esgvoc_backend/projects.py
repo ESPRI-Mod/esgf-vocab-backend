@@ -50,7 +50,7 @@ async def find_project(
 async def get_all_terms_in_all_projects(
     selected_term_fields: \
             Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                                                                            -> list[DataDescriptor]:
+                                                                            -> list[tuple[str, list[DataDescriptor]]]:
     return projects.get_all_terms_in_all_projects(selected_term_fields=selected_term_fields)
 
 

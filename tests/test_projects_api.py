@@ -49,8 +49,8 @@ def test_find_projects() -> None:
 
 def test_get_all_terms_all_projects() -> None:
     url = '/terms'
-    min_items = 2000
-    select = True
+    min_items = 2
+    select = False
     _test_get(client=_CLIENT, url=url, min_items=min_items, select=select)
 
 
