@@ -3,6 +3,7 @@ import time
 from fastapi import FastAPI, Request
 
 import esgvoc_backend.drs as drs
+import esgvoc_backend.index as index
 import esgvoc_backend.projects as projects
 import esgvoc_backend.universe as universe
 import esgvoc_backend.uris as uris
@@ -23,6 +24,7 @@ def create_app() -> FastAPI:
     app.include_router(projects.router)
     app.include_router(drs.router)
     app.include_router(uris.router)
+    app.include_router(index.router)
     app.middleware("http")(add_process_time_header)
     return app
 
