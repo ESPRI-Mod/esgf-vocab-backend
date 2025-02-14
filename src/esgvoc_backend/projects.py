@@ -8,6 +8,7 @@ from esgvoc.api.projects import MatchingTerm
 from esgvoc.api.report import ValidationReport
 from esgvoc.api.search import SearchSettings
 from fastapi import APIRouter, HTTPException, Path, Query, status
+from pydantic import SerializeAsAny
 
 router = APIRouter(prefix="/projects")
 
@@ -50,14 +51,14 @@ async def find_project(
 async def get_all_terms_in_all_projects(
     selected_term_fields: \
             Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                                                                            -> list[tuple[str, list[DataDescriptor]]]:
+                                                                            -> list[tuple[str, list[SerializeAsAny[DataDescriptor]]]]:
     return projects.get_all_terms_in_all_projects(selected_term_fields=selected_term_fields)
 
 
 @router.post("/terms/find", summary="Find terms in all projects")
 async def find_terms_in_all_projects(
         term_id: Annotated[str, Query(description="The terms to be found")],
-        settings: SearchSettings | None = None) -> list[DataDescriptor]:
+        settings: SearchSettings | None = None) -> list[SerializeAsAny[DataDescriptor]]:
     return projects.find_terms_in_all_projects(term_id=term_id, settings=settings)
 
 
@@ -74,7 +75,7 @@ async def valid_term_in_all_projects(
 async def cross_terms_in_all_projects(
         data_descriptor_id: Annotated[str, Query(description="The given data descriptor")],
         term_id: Annotated[str, Query(description="The terms to be found")],
-        settings: SearchSettings | None = None) -> list[tuple[list[tuple[DataDescriptor, str]], str]]:
+        settings: SearchSettings | None = None) -> list[tuple[list[tuple[SerializeAsAny[DataDescriptor], str]], str]]:
     return projects.find_terms_from_data_descriptor_in_all_projects(
         data_descriptor_id=data_descriptor_id,
         term_id=term_id,
@@ -86,7 +87,7 @@ async def get_all_terms_in_project(
         project_id: Annotated[str, Path(description='The given project')],
         selected_term_fields: \
             Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                                                                            -> list[DataDescriptor]:
+                                                                            -> list[SerializeAsAny[DataDescriptor]]:
     return projects.get_all_terms_in_project(project_id=project_id,
                                              selected_term_fields=selected_term_fields)
 
@@ -95,7 +96,7 @@ async def get_all_terms_in_project(
 async def find_terms_in_project(
         project_id: Annotated[str, Path(description='The given project')],
         term_id: Annotated[str, Query(description="The terms to be found")],
-        settings: SearchSettings | None = None) -> list[DataDescriptor]:
+        settings: SearchSettings | None = None) -> list[SerializeAsAny[DataDescriptor]]:
     return projects.find_terms_in_project(project_id=project_id, term_id=term_id,settings=settings)
 
 
@@ -114,7 +115,7 @@ async def cross_terms_in_project(
         project_id: Annotated[str, Path(description='The given project')],
         data_descriptor_id: Annotated[str, Query(description="The given data descriptor")],
         term_id: Annotated[str, Query(description="The terms to be found")],
-        settings: SearchSettings | None = None) -> list[tuple[DataDescriptor, str]]:
+        settings: SearchSettings | None = None) -> list[tuple[SerializeAsAny[DataDescriptor], str]]:
     return projects.find_terms_from_data_descriptor_in_project(project_id=project_id,
                                                                data_descriptor_id=data_descriptor_id,
                                                                term_id=term_id,
@@ -143,7 +144,7 @@ async def get_terms_in_collection(
         collection_id: Annotated[str, Path(description='The given collection')],
         selected_term_fields: \
             Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                                                                            -> list[DataDescriptor]:
+                                                                            -> list[SerializeAsAny[DataDescriptor]]:
     return projects.get_all_terms_in_collection(project_id=project_id, collection_id=collection_id,
                                                 selected_term_fields=selected_term_fields)
 
@@ -154,7 +155,7 @@ async def find_terms_in_collection(
         project_id: Annotated[str, Path(description='The project of the collection')],
         collection_id: Annotated[str, Path(description='The given collection')],
         term_id: Annotated[str, Query(description="The terms to be found")],
-        settings: SearchSettings | None = None) -> list[DataDescriptor]:
+        settings: SearchSettings | None = None) -> list[SerializeAsAny[DataDescriptor]]:
     return projects.find_terms_in_collection(project_id=project_id, collection_id=collection_id,
                                              term_id=term_id, settings=settings)
 

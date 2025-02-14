@@ -4,6 +4,7 @@ import esgvoc.api.universe as universe
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.search import SearchSettings
 from fastapi import APIRouter, Path, Query
+from pydantic import SerializeAsAny
 
 router = APIRouter(prefix="/universe")
 
@@ -23,14 +24,14 @@ router = APIRouter(prefix="/universe")
 async def get_terms_in_universe(
         selected_term_fields: \
             Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                -> list[DataDescriptor]:
+                -> list[SerializeAsAny[DataDescriptor]]:
     return universe.get_all_terms_in_universe(selected_term_fields=selected_term_fields)
 
 
 @router.post("/terms/find", summary="Find terms in the universe")
 async def find_terms_in_universe(
         term_id: Annotated[str, Query(description="The terms to be found")],
-        settings: SearchSettings | None = None) -> list[DataDescriptor]:
+        settings: SearchSettings | None = None) -> list[SerializeAsAny[DataDescriptor]]:
     return universe.find_terms_in_universe(term_id=term_id, settings=settings)
 
 
@@ -53,7 +54,7 @@ async def get_terms_in_data_descriptor(
         data_descriptor_id: Annotated[str, Path(description="The given data descriptor")],
         selected_term_fields: \
             Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                                                                            -> list[DataDescriptor]:
+                                                                            -> list[SerializeAsAny[DataDescriptor]]:
     return universe.get_all_terms_in_data_descriptor(data_descriptor_id=data_descriptor_id,
                                                      selected_term_fields=selected_term_fields)
 
@@ -63,7 +64,7 @@ async def get_terms_in_data_descriptor(
 async def find_terms_in_data_descriptors(
         data_descriptor_id: Annotated[str, Path(description="The given data descriptor")],
         term_id: Annotated[str, Query(description="The terms to be found")],
-        settings: SearchSettings | None = None) -> list[DataDescriptor]:
+        settings: SearchSettings | None = None) -> list[SerializeAsAny[DataDescriptor]]:
     return universe.find_terms_in_data_descriptor(data_descriptor_id=data_descriptor_id,
                                                   term_id=term_id,
                                                   settings=settings)
