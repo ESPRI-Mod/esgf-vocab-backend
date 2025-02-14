@@ -1,0 +1,173 @@
+---
+
+concurrency: 20
+base: 'http://es-vocab.ipsl.fr'
+iterations: 100
+rampup: 5
+
+plan:
+  - name: Project id
+    assign:
+      key: project_id
+      value: cmip6
+
+
+  - name: Data descriptor id
+    assign:
+      key: data_descriptor_id
+      value: variable
+
+
+  - name: Collection id
+    assign:
+      key: collection_id
+      value: variable_id
+
+
+  - name: Value
+    assign:
+      key: value
+      value: airmass
+
+
+  - name: DRS directory expression
+    assign:
+      key: dir_expression
+      value: CMIP6Plus/CMIP/NCC/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923
+
+
+  - name: DRS filename expression
+    assign:
+      key: file_expression
+      value: od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc
+
+
+  - name: DRS dataset id expression
+    assign:
+      key: dataset_expression
+      value: CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn
+
+
+  - name: Fetch terms
+    request:
+      url: /universe/terms
+
+
+  - name: Get all terms of the universe
+    request:
+      url: /universe/terms
+
+
+  - name: Get all the data descriptors
+    request:
+      url: /universe/data_descriptors
+
+
+  - name: Get all terms of a given data descriptor
+    request:
+      url: /universe/data_descriptors/{{ data_descriptor_id }}/terms
+
+
+  - name: Get all project ids
+    request:
+      url: /projects/
+
+
+  - name: Find projects
+    request:
+      url: /projects/find?project_id={{ project_id }}
+
+
+  - name: Get all terms of all projects
+    request:
+      url: /projects/terms
+
+
+  - name: Valid term against all terms of in all projects
+    request:
+      url: /projects/terms/valid?value={{ value }}
+
+
+  - name: Get all terms of a given project
+    request:
+      url: /projects/{{ project_id }}/terms
+
+
+  - name: Valid term against all terms of a given project
+    request:
+      url: /projects/{{ project_id }}/terms/valid?value={{ value }}
+
+
+  - name: Get all collection ids of a given project
+    request:
+      url: /projects/{{ project_id }}/collections
+
+
+  - name: Get all terms of a given collection
+    request:
+      url: /projects/{{ project_id }}/collections/{{ collection_id }}/terms
+
+
+  - name: Valid term against a specific term or all terms of a given collection
+    request:
+      url: /projects/{{ project_id }}/collections/{{ collection_id }}/terms/valid?value={{ value }}
+
+
+
+  - name: Validate an expression against the DRS directory specification of a given project
+    request:
+      url: /drs/{{ project_id }}/validation/directory?expression={{ dir_expression }}
+
+
+  - name: Validate an expression against the DRS file name specification of a given project
+    request:
+      url: /drs/{{ project_id }}/validation/filename?expression={{ file_expression }}
+
+
+  - name: Validate an expression against the DRS dataset id specification of a given project
+    request:
+      url: /drs/{{ project_id }}/validation/datasetid?expression={{ dataset_expression }}
+
+
+    # POST
+    # /universe/data_descriptors/find
+    # Find data descriptors in the universe
+    # POST
+    # /universe/data_descriptors/{data_descriptor_id}/terms/find
+    # Find terms in a given data descriptor
+    # POST
+    # /projects/terms/find
+    # Find terms in all projects
+    # POST
+    # /projects/terms/cross
+    # Find terms according to a given data descriptor in all projects
+    # POST
+    # /projects/{{ project_id }}/terms/find
+    # Find terms in a given project
+    # POST
+    # /projects/{{ project_id }}/terms/cross
+    # Find terms according to a given data descriptor in a given project
+    # POST
+    # /projects/{{ project_id }}/collections/find
+    # Find collections in a given project
+    # POST
+    # /projects/{{ project_id }}/collections/{collection_id}/terms/find
+    # Find terms in a given collection
+    # POST
+    # /drs/{{ project_id }}/generation/mapping/directory
+    # Generate a DRS directory path for a given project from a mapping of collections and terms
+    # POST
+    # /drs/{{ project_id }}/generation/mapping/filename
+    # Generate a DRS file name for a given project from a mapping of collections and terms
+    # POST
+    # /drs/{{ project_id }}/generation/mapping/datasetid
+    # Generate a DRS dataset id for a given project from a mapping of collections and terms
+    # POST
+    # /drs/{{ project_id }}/generation/terms/directory
+    # Generate a DRS directory path for a given project from a bag of terms
+    # POST
+    # /drs/{{ project_id }}/generation/terms/filename
+    # Generate a DRS file name for a given project from a bag of terms
+    # POST
+    # /drs/{{ project_id }}/generation/terms/datasetid
+    # Generate a DRS dataset id for a given project from a bag of terms
