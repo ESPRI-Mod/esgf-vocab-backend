@@ -66,7 +66,7 @@ def format_term(term: tuple[str, dict], accept_type: str | None) -> JSONResponse
 
 
 def create_universe_term_end_point(data_descriptor_id: str) -> Callable:
-    def _end_point(term_id: str, accept: Annotated[str | None, Header()]):
+    def _end_point(term_id: str, accept: Annotated[str | None, Header()] = None):
         if term_id in _UNIVERSE_CACHE[data_descriptor_id]:
             return format_term(_UNIVERSE_CACHE[data_descriptor_id][term_id], accept)
         else:
@@ -86,7 +86,7 @@ def create_universe_term_routes():
 
 
 def create_project_term_end_point(project_id: str, collection_id: str) -> Callable:
-    def _end_point(term_id: str, accept: Annotated[str | None, Header()]):
+    def _end_point(term_id: str, accept: Annotated[str | None, Header()] = None):
         if term_id in _PROJECTS_CACHE[project_id][collection_id]:
             return format_term(_PROJECTS_CACHE[project_id][collection_id][term_id], accept)
         else:
