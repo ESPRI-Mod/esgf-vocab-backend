@@ -13,6 +13,8 @@ router = APIRouter()
 
 _UNIVERSE_CACHE:dict[str, dict[str, tuple[str, dict]]] = dict()
 _PROJECTS_CACHE:dict[str, dict[str, dict[str, tuple[str, dict]]]] = dict()
+_COLLECTION_DATA_DESCRIPTOR_MAPPING: dict[str, str] = dict()
+
 
 def init_universe_cache() -> None:
     data_descriptors = universe.get_all_data_descriptors_in_universe()
@@ -23,14 +25,17 @@ def init_universe_cache() -> None:
 
 
 def init_projects_cache() -> None:
-    prjs = projects.get_all_projects()
-    for project in prjs:
-        _PROJECTS_CACHE[project] = dict()
-        collections = projects.get_all_collections_in_project(project)
-        for collection in collections:
-            _PROJECTS_CACHE[project][collection] = dict()
-            for term in projects.get_all_terms_in_collection(project, collection):
-                _PROJECTS_CACHE[project][collection][term.id] = jsonable_encoder(term), from_json_to_html(term)
+    project_ids = projects.get_all_projects()
+    for project_id in project_ids:
+        _PROJECTS_CACHE[project_id] = dict()
+        with projects._get_project_connection(project_id).create_session() as session:
+            collections = projects._get_all_collections_in_project(session)
+            for collection in collections:
+                _COLLECTION_DATA_DESCRIPTOR_MAPPING[collection.id] = collection.data_descriptor_id
+                _PROJECTS_CACHE[project_id][collection.id] = dict()
+                for term in projects._get_all_terms_in_collection(collection, None):
+                    _PROJECTS_CACHE[project_id][collection.id][term.id] = jsonable_encoder(term), \
+                                                                          from_json_to_html(term)
 
 
 def to_str(value: list | dict | Any) -> str:
@@ -98,9 +103,11 @@ def create_project_term_end_point(project_id: str, collection_id: str) -> Callab
 def create_project_term_routes():
     for project_id, collection_contains in _PROJECTS_CACHE.items():
         for collection_id, _ in collection_contains.items():
+            data_descriptor_id = _COLLECTION_DATA_DESCRIPTOR_MAPPING[collection_id]
             router.add_api_route(
                 f"/{project_id}/{collection_id}/{{term_id}}",
                 endpoint=create_project_term_end_point(project_id, collection_id),
+                response_model=DATA_DESCRIPTOR_CLASS_MAPPING[data_descriptor_id],
                 methods=["GET"],
             )
 
