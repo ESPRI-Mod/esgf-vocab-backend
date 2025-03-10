@@ -10,6 +10,11 @@ from esgvoc.api.search import SearchSettings
 from fastapi import APIRouter, HTTPException, Path, Query, status
 from pydantic import SerializeAsAny
 
+from esgvoc_backend.utils import _generate_route_desc
+
+# Prefix for the API Web documentation of the route.
+_PAGE_PREFIX = 'projects.html#esgvoc.api.projects'
+
 router = APIRouter(prefix="/projects")
 
 """
@@ -36,18 +41,24 @@ router = APIRouter(prefix="/projects")
 """
 
 
-@router.get("/", summary="Get all project ids")
+@router.get("/",
+            summary="Get all project ids",
+            description=_generate_route_desc(f'{_PAGE_PREFIX}.get_all_projects'))
 async def get_projects() -> list[str]:
     return projects.get_all_projects()
 
 
-@router.get("/find", summary="Find projects")
+@router.get("/find",
+            summary="Find projects",
+            description=_generate_route_desc(f'{_PAGE_PREFIX}.find_project'))
 async def find_project(
         project_id: Annotated[str, Query(description="The project to be found")])-> ProjectSpecs|None:
     return projects.find_project(project_id=project_id)
 
 
-@router.get("/terms", summary="Get all terms of all projects")
+@router.get("/terms",
+            summary="Get all terms of all projects",
+            description=_generate_route_desc(f'{_PAGE_PREFIX}.get_all_terms_in_all_projects'))
 async def get_all_terms_in_all_projects(
     selected_term_fields: \
             Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
@@ -55,14 +66,18 @@ async def get_all_terms_in_all_projects(
     return projects.get_all_terms_in_all_projects(selected_term_fields=selected_term_fields)
 
 
-@router.post("/terms/find", summary="Find terms in all projects")
+@router.post("/terms/find",
+             summary="Find terms in all projects",
+             description=_generate_route_desc(f'{_PAGE_PREFIX}.find_terms_in_all_projects'))
 async def find_terms_in_all_projects(
         term_id: Annotated[str, Query(description="The terms to be found")],
         settings: SearchSettings | None = None) -> list[SerializeAsAny[DataDescriptor]]:
     return projects.find_terms_in_all_projects(term_id=term_id, settings=settings)
 
 
-@router.get("/terms/valid", summary="Valid term against all terms of in all projects")
+@router.get("/terms/valid",
+            summary="Valid term against all terms of in all projects",
+            description=_generate_route_desc(f'{_PAGE_PREFIX}.valid_term_in_all_projects'))
 async def valid_term_in_all_projects(
         value: Annotated[str, Query(description='The value to be validated')]) -> list[MatchingTerm]:
     try:
@@ -71,18 +86,21 @@ async def valid_term_in_all_projects(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.post("/terms/cross", summary="Find terms according to a given data descriptor in all projects")
+@router.post("/terms/cross",
+             summary="Find terms according to a given data descriptor in all projects",
+             description=_generate_route_desc(f'{_PAGE_PREFIX}.find_terms_from_data_descriptor_in_all_projects'))
 async def cross_terms_in_all_projects(
         data_descriptor_id: Annotated[str, Query(description="The given data descriptor")],
         term_id: Annotated[str, Query(description="The terms to be found")],
         settings: SearchSettings | None = None) -> list[tuple[list[tuple[SerializeAsAny[DataDescriptor], str]], str]]:
-    return projects.find_terms_from_data_descriptor_in_all_projects(
-        data_descriptor_id=data_descriptor_id,
-        term_id=term_id,
-        settings=settings)
+    return projects.find_terms_from_data_descriptor_in_all_projects(data_descriptor_id=data_descriptor_id,
+                                                                    term_id=term_id,
+                                                                    settings=settings)
 
 
-@router.get("/{project_id}/terms", summary="Get all terms of a given project")
+@router.get("/{project_id}/terms",
+            summary="Get all terms of a given project",
+            description=_generate_route_desc(f'{_PAGE_PREFIX}.get_all_terms_in_project'))
 async def get_all_terms_in_project(
         project_id: Annotated[str, Path(description='The given project')],
         selected_term_fields: \
@@ -92,7 +110,9 @@ async def get_all_terms_in_project(
                                              selected_term_fields=selected_term_fields)
 
 
-@router.post("/{project_id}/terms/find", summary="Find terms in a given project")
+@router.post("/{project_id}/terms/find",
+             summary="Find terms in a given project",
+             description=_generate_route_desc(f'{_PAGE_PREFIX}.find_terms_in_project'))
 async def find_terms_in_project(
         project_id: Annotated[str, Path(description='The given project')],
         term_id: Annotated[str, Query(description="The terms to be found")],
@@ -100,7 +120,9 @@ async def find_terms_in_project(
     return projects.find_terms_in_project(project_id=project_id, term_id=term_id,settings=settings)
 
 
-@router.get("/{project_id}/terms/valid", summary="Valid term against all terms of a given project")
+@router.get("/{project_id}/terms/valid",
+            summary="Valid term against all terms of a given project",
+            description=_generate_route_desc(f'{_PAGE_PREFIX}.valid_term_in_project'))
 async def valid_term_in_project(
         project_id: Annotated[str, Path(description='The given project')],
         value: Annotated[str, Query(description='The value to be validated')]) -> list[MatchingTerm]:
@@ -110,7 +132,9 @@ async def valid_term_in_project(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.post("/{project_id}/terms/cross", summary="Find terms according to a given data descriptor in a given project")
+@router.post("/{project_id}/terms/cross",
+             summary="Find terms according to a given data descriptor in a given project",
+             description=_generate_route_desc(f'{_PAGE_PREFIX}.find_terms_from_data_descriptor_in_project'))
 async def cross_terms_in_project(
         project_id: Annotated[str, Path(description='The given project')],
         data_descriptor_id: Annotated[str, Query(description="The given data descriptor")],
@@ -122,13 +146,17 @@ async def cross_terms_in_project(
                                                                settings=settings)
 
 
-@router.get("/{project_id}/collections", summary="Get all collection ids of a given project")
+@router.get("/{project_id}/collections",
+            summary="Get all collection ids of a given project",
+            description=_generate_route_desc(f'{_PAGE_PREFIX}.get_all_collections_in_project'))
 async def get_collections_in_project(
         project_id: Annotated[str, Path(description='The given project')]) -> list[str]:
     return projects.get_all_collections_in_project(project_id=project_id)
 
 
-@router.post("/{project_id}/collections/find", summary="Find collections in a given project")
+@router.post("/{project_id}/collections/find",
+             summary="Find collections in a given project",
+             description=_generate_route_desc(f'{_PAGE_PREFIX}.find_collections_in_project'))
 async def find_collections_in_project(
         project_id: Annotated[str, Path(description='The given project')],
         collection_id: Annotated[str, Query(description="The collections to be found")],
@@ -138,7 +166,8 @@ async def find_collections_in_project(
 
 
 @router.get("/{project_id}/collections/{collection_id}/terms",
-            summary="Get all terms of a given collection")
+            summary="Get all terms of a given collection",
+            description=_generate_route_desc(f'{_PAGE_PREFIX}.get_all_terms_in_collection'))
 async def get_terms_in_collection(
         project_id: Annotated[str, Path(description='The project of the collection')],
         collection_id: Annotated[str, Path(description='The given collection')],
@@ -150,7 +179,8 @@ async def get_terms_in_collection(
 
 
 @router.post("/{project_id}/collections/{collection_id}/terms/find",
-             summary="Find terms in a given collection")
+             summary="Find terms in a given collection",
+             description=_generate_route_desc(f'{_PAGE_PREFIX}.find_terms_in_collection'))
 async def find_terms_in_collection(
         project_id: Annotated[str, Path(description='The project of the collection')],
         collection_id: Annotated[str, Path(description='The given collection')],
@@ -161,7 +191,8 @@ async def find_terms_in_collection(
 
 
 @router.get("/{project_id}/collections/{collection_id}/terms/valid",
-            summary="Valid term against a specific term or all terms of a given collection")
+            summary="Valid term against a specific term or all terms of a given collection",
+            description=_generate_route_desc(f'{_PAGE_PREFIX}.valid_term'))
 async def valid_term_in_collection(
         project_id: Annotated[str, Path(description='The project of the collection')],
         collection_id: Annotated[str, Path(description='A given collection')],
