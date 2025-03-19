@@ -29,9 +29,9 @@ router = APIRouter(prefix="/universe")
             summary="Get all terms of the universe",
             description=_generate_route_desc(f'{_PAGE_PREFIX}.get_all_terms_in_universe'))
 async def get_terms_in_universe(
-        selected_term_fields: \
-            Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                -> list[SerializeAsAny[DataDescriptor]]:
+        selected_term_fields: Annotated[list[str] | None,
+                                        Query(description="Selected term fields or null")] = None) \
+                                                            -> list[SerializeAsAny[DataDescriptor]]:
     return universe.get_all_terms_in_universe(selected_term_fields=selected_term_fields)
 
 
@@ -66,9 +66,9 @@ async def find_data_descriptors(
             description=_generate_route_desc(f'{_PAGE_PREFIX}.get_all_terms_in_data_descriptor'))
 async def get_terms_in_data_descriptor(
         data_descriptor_id: Annotated[str, Path(description="The given data descriptor")],
-        selected_term_fields: \
-            Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                                                                            -> list[SerializeAsAny[DataDescriptor]]:
+        selected_term_fields: Annotated[list[str] | None,
+                                        Query(description="Selected term fields or null")] = None) \
+                                                            -> list[SerializeAsAny[DataDescriptor]]:
     return universe.get_all_terms_in_data_descriptor(data_descriptor_id=data_descriptor_id,
                                                      selected_term_fields=selected_term_fields)
 
