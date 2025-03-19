@@ -19,23 +19,23 @@ def _test_get(client: TestClient, url: str, min_items: int, select: bool):
     if select:
         params = {'selected_term_fields': ['drs_name']}
         result = client.get(url=url, params=params)
-        result = result.json()
-        assert len(result) >= min_items
-        assert len(result[min_items]) == 3
+        json_result = result.json()
+        assert len(json_result) >= min_items
+        assert len(json_result[min_items]) == 3
 
 
-def _test_find(client: TestClient, url: str, params: dict[str: str], select: bool,
-               nb_results: int = 1, level: int = 1):
+def _test_find(client: TestClient, url: str, params: dict[str, str], select: bool,
+               nb_results: int = 1, level: int = 1) -> None:
     settings = {'case_sensitive': False, 'selected_term_fields': ['drs_name']}
     result = client.post(url=url, params=params)
     result.raise_for_status()
     assert len(result.json()) == 0
-    result = client.post(url=url, params=params, data=json.dumps(settings))
+    result = client.post(url=url, params=params, data=json.dumps(settings))  # type: ignore
     result.raise_for_status()
-    result = result.json()
-    assert len(result) == nb_results
+    json_result = result.json()
+    assert len(json_result) == nb_results
     if select:
-        data = result
+        data = json_result
         for _ in range(0, level):
             data = data[0]
         assert len(data) == 3

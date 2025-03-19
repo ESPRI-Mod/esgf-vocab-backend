@@ -11,8 +11,8 @@ from fastapi.responses import HTMLResponse, JSONResponse
 
 router = APIRouter()
 
-_UNIVERSE_CACHE:dict[str, dict[str, tuple[str, dict]]] = dict()
-_PROJECTS_CACHE:dict[str, dict[str, dict[str, tuple[str, dict]]]] = dict()
+_UNIVERSE_CACHE: dict[str, dict[str, tuple[Any, str]]] = dict()
+_PROJECTS_CACHE: dict[str, dict[str, dict[str, tuple[Any, str]]]] = dict()
 _COLLECTION_DATA_DESCRIPTOR_MAPPING: dict[str, str] = dict()
 
 
@@ -28,7 +28,7 @@ def init_projects_cache() -> None:
     project_ids = projects.get_all_projects()
     for project_id in project_ids:
         _PROJECTS_CACHE[project_id] = dict()
-        with projects._get_project_connection(project_id).create_session() as session:
+        with projects._get_project_connection(project_id).create_session() as session:  # type: ignore
             collections = projects._get_all_collections_in_project(session)
             for collection in collections:
                 _COLLECTION_DATA_DESCRIPTOR_MAPPING[collection.id] = collection.data_descriptor_id
@@ -63,7 +63,7 @@ def from_json_to_html(term: DataDescriptor) -> str:
     return result
 
 
-def format_term(term: tuple[str, dict], accept_type: str | None) -> JSONResponse | HTMLResponse:
+def format_term(term: tuple[Any, str], accept_type: str | None) -> JSONResponse | HTMLResponse:
     if accept_type is not None and "application/json" in accept_type:
         return JSONResponse(content=term[0])
     else:
@@ -112,7 +112,7 @@ def create_project_term_routes():
             )
 
 
-######################## MAIN #######################
+# MAIN
 init_universe_cache()
 init_projects_cache()
 create_universe_term_routes()

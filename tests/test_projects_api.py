@@ -13,22 +13,22 @@ _CLIENT = TestClient(_APP, base_url=_BASE_URL, backend='asyncio')
 
 
 def _test_validation(client: TestClient, url: str, params: list[dict],
-                     nb_results:int = 1, has_report: bool = False):
+                     nb_results: int = 1, has_report: bool = False) -> None:
     results = client.get(url=url, params=params[0])
     results.raise_for_status()
-    results = results.json()
+    json_results = results.json()
     if has_report:
-        assert not results['validated']
+        assert not json_results['validated']
     else:
-        assert len(results) == 0
+        assert len(json_results) == 0
     results = client.get(url=url, params=params[1])
     results.raise_for_status()
-    results = results.json()
+    json_results = results.json()
     if has_report:
-        assert results['validated']
+        assert json_results['validated']
     else:
-        assert len(results) == nb_results
-        for result in results:
+        assert len(json_results) == nb_results
+        for result in json_results:
             assert result['term_id'] == params[1]['value'].lower()
 
 
