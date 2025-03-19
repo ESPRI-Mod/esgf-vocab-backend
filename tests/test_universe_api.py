@@ -1,5 +1,3 @@
-import json
-
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -10,70 +8,114 @@ _BASE_URL = 'http://localhost:9999/universe'
 _APP = FastAPI()
 _APP.include_router(universe.router)
 _CLIENT = TestClient(_APP, base_url=_BASE_URL, backend='asyncio')
+_SELECT = {'selected_term_fields': ['drs_name']}
 
 
-def _test_get(client: TestClient, url: str, min_items: int, select: bool):
-    result = client.get(url=url)
+def _test_get(client: TestClient, url: str, params: dict | None, min_items: int, select: bool) -> None:
+    result = client.get(url=url, params=params)
     result.raise_for_status()
-    assert len(result.json()) >= min_items
-    if select:
-        params = {'selected_term_fields': ['drs_name']}
-        result = client.get(url=url, params=params)
+    if min_items > 0:
         json_result = result.json()
+        assert json_result is not None
         assert len(json_result) >= min_items
-        assert len(json_result[min_items]) == 3
+        print(json_result)
+        if select:
+            if params:
+                params.update(_SELECT)
+            else:
+                params = _SELECT
+            result = client.get(url=url, params=params)
+            json_result = result.json()
+            assert len(json_result) >= min_items
+            if isinstance(json_result, list):
+                assert len(json_result[min_items-1]) == 3
+            else:
+                assert len(json_result) == 3
+    else:
+        assert result.json() is None
 
 
-def _test_find(client: TestClient, url: str, params: dict[str, str], select: bool,
-               nb_results: int = 1, level: int = 1) -> None:
-    settings = {'case_sensitive': False, 'selected_term_fields': ['drs_name']}
-    result = client.post(url=url, params=params)
-    result.raise_for_status()
-    assert len(result.json()) == 0
-    result = client.post(url=url, params=params, data=json.dumps(settings))  # type: ignore
-    result.raise_for_status()
-    json_result = result.json()
-    assert len(json_result) == nb_results
-    if select:
-        data = json_result
-        for _ in range(0, level):
-            data = data[0]
-        assert len(data) == 3
+def test_find_items_in_universe() -> None:
+    url = '/items/find'
+    params = {'expression': 'ipsl', 'only_id': True}
+    min_items = 1
+    select = False
+    _test_get(_CLIENT, url, params, min_items, select)
 
 
 def test_get_terms_in_universe() -> None:
     url = '/terms'
+    params = None
     min_items = 2000
-    _test_get(_CLIENT, url, min_items, True)
+    select = True
+    _test_get(_CLIENT, url, params, min_items, select)
+
+
+def test_get_term_in_universe() -> None:
+    term_id = 'ipsl'
+    url = '/terms/get'
+    params = {'term_id': term_id}
+    min_items = 1
+    select = True
+    _test_get(_CLIENT, url, params, min_items, select)
 
 
 def test_find_terms_in_universe() -> None:
     url = '/terms/find'
-    params = {'term_id': 'IpsL'}
-    _test_find(_CLIENT, url, params, True)
+    params = {'expression': 'IpsL'}
+    min_items = 2
+    select = True
+    _test_get(_CLIENT, url, params, min_items, select)
 
 
 def test_get_data_descriptors():
     url = '/data_descriptors'
+    params = None
     min_items = 10
-    _test_get(_CLIENT, url, min_items, False)
+    select = False
+    _test_get(_CLIENT, url, params, min_items, select)
+
+
+def test_get_data_descriptor():
+    data_descriptor_id = 'institution'
+    url = '/data_descriptors/get'
+    params = {'data_descriptor_id': data_descriptor_id}
+    min_items = 1
+    select = False
+    _test_get(_CLIENT, url, params, min_items, select)
 
 
 def test_find_data_descriptors() -> None:
     url = '/data_descriptors/find'
-    params = {'data_descriptor_id': 'InstitutioN'}
-    _test_find(_CLIENT, url, params, False)
+    params = {'expression': 'InstitutioN'}
+    min_items = 1
+    select = False
+    _test_get(_CLIENT, url, params, min_items, select)
 
 
 def test_get_terms_in_data_descriptor() -> None:
     data_descriptor_id = 'institution'
     url = f'/data_descriptors/{data_descriptor_id}/terms'
+    params = None
     min_items = 10
-    _test_get(_CLIENT, url, min_items, True)
+    select = True
+    _test_get(_CLIENT, url, params, min_items, select)
+
+
+def test_get_term_in_data_descriptor() -> None:
+    data_descriptor_id = 'institution'
+    term_id = 'ipsl'
+    url = f'/data_descriptors/{data_descriptor_id}/terms/get'
+    params = {'term_id': term_id}
+    min_items = 1
+    select = True
+    _test_get(_CLIENT, url, params, min_items, select)
 
 
 def test_find_terms_in_data_descriptor() -> None:
     data_descriptor_id = 'institution'
     url = f'/data_descriptors/{data_descriptor_id}/terms/find'
-    params = {'term_id': 'IpsL'}
-    _test_find(_CLIENT, url, params, True)
+    params = {'expression': 'IpsL NOT CNES'}
+    min_items = 1
+    select = True
+    _test_get(_CLIENT, url, params, min_items, select)
