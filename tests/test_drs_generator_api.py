@@ -1,5 +1,5 @@
 import json
-from typing import Generator
+from typing import Any, Generator
 
 import pytest
 from esgvoc.apps.drs.report import DrsGenerationReport
@@ -67,7 +67,7 @@ _SOME_MAPPING_GENERATION_PARAMS = [
         'table_id': 'ACmon',
         'grid_label': 'gn',
         'institution_id': 'IPSL'},
-    'gen_expr_ko': 'od550aer_ACmon_MIROC6_[MISSING]_r2i2p1f2_gn.nc',
+     'gen_expr_ko': 'od550aer_ACmon_MIROC6_[MISSING]_r2i2p1f2_gn.nc',
      'error_kinds': ['MissingTerm']},
 
     {'project_id': 'cmip6plus',
@@ -93,14 +93,14 @@ _SOME_MAPPING_GENERATION_PARAMS = [
         'table_id': 'ACmon',
         'grid_label': 'Grrrr',
         'institution_id': 'IPSL'},
-    'gen_expr_ko': 'CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.[INVALID]',
+     'gen_expr_ko': 'CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.[INVALID]',
      'error_kinds': ['InvalidTerm']},
 ]
 
 _SOME_TERMS_GENERATION_PARAMS = [
     {'project_id': 'cmip6plus',
      'drs_type': 'directory',
-     'terms_ok': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer', 'ACmon','gn',
+     'terms_ok': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer', 'ACmon', 'gn',
                   'v20190923', 'IPSL'],
      'gen_expr_ok': 'CMIP6Plus/CMIP/IPSL/MIROC6/amip/r2i2p1f2/ACmon/od550aer/gn/v20190923',
      'terms_ko': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'DKRZ', 'od550aer', 'ACmon', 'gn', 'IPSL'],
@@ -109,20 +109,21 @@ _SOME_TERMS_GENERATION_PARAMS = [
 
     {'project_id': 'cmip6plus',
      'drs_type': 'filename',
-     'terms_ok': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer', 'ACmon','gn'],
+     'terms_ok': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer', 'ACmon', 'gn'],
      'gen_expr_ok': 'od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn.nc',
-     'terms_ko': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'ACmon','gn'],
+     'terms_ko': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'ACmon', 'gn'],
      'gen_expr_ko': '[MISSING]_ACmon_MIROC6_amip_r2i2p1f2_gn.nc',
      'error_kinds': ['MissingTerm']},
 
-     {'project_id': 'cmip6plus',
+    {'project_id': 'cmip6plus',
      'drs_type': 'datasetid',
-     'terms_ok': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer', 'ACmon','gn', 'UA'],
+     'terms_ok': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer', 'ACmon', 'gn', 'UA'],
      'gen_expr_ok': 'CMIP6Plus.CMIP.UA.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn',
-     'terms_ko': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer', 'ACmon','gn', 'UA', 'DKRZ'],
+     'terms_ko': ['r2i2p1f2', 'CMIP', 'MIROC6', 'CMIP6Plus', 'amip', 'od550aer', 'ACmon', 'gn', 'UA', 'DKRZ'],
      'gen_expr_ko': 'CMIP6Plus.CMIP.[MISSING].MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn',
      'error_kinds': ['TooManyTermsCollection', 'MissingTerm']},
 ]
+
 
 def _check_generation(generation_param: dict, is_mapping: bool) -> None:
     if is_mapping:
@@ -134,7 +135,7 @@ def _check_generation(generation_param: dict, is_mapping: bool) -> None:
         body = generation_param['mapping_ok']
     else:
         body = generation_param['terms_ok']
-    result = _CLIENT.post(url=url, data=json.dumps(body))
+    result = _CLIENT.post(url=url, data=json.dumps(body))  # type: ignore
     result.raise_for_status()
     report = DrsGenerationReport(**result.json())
     assert report.validated
@@ -143,7 +144,7 @@ def _check_generation(generation_param: dict, is_mapping: bool) -> None:
         body = generation_param['mapping_ko']
     else:
         body = generation_param['terms_ko']
-    result = _CLIENT.post(url=url, data=json.dumps(body))
+    result = _CLIENT.post(url=url, data=json.dumps(body))  # type: ignore
     result.raise_for_status()
     report = DrsGenerationReport(**result.json())
     assert report.generated_drs_expression == generation_param['gen_expr_ko']
@@ -158,7 +159,7 @@ def _provide_mapping_generation_params() -> Generator:
 
 
 @pytest.fixture(params=_provide_mapping_generation_params())
-def mapping_generation_param(request) -> dict[str, any]:
+def mapping_generation_param(request) -> dict[str, Any]:
     return request.param
 
 
@@ -172,7 +173,7 @@ def _provide_terms_generation_params() -> Generator:
 
 
 @pytest.fixture(params=_provide_terms_generation_params())
-def terms_generation_param(request) -> dict[str, any]:
+def terms_generation_param(request) -> dict[str, Any]:
     return request.param
 
 

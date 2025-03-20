@@ -4,9 +4,8 @@ import esgvoc.api.projects as projects
 from esgvoc.api import APIException
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import ProjectSpecs
-from esgvoc.api.projects import MatchingTerm
 from esgvoc.api.report import ValidationReport
-from esgvoc.api.search import SearchSettings
+from esgvoc.api.search import MatchingTerm, SearchSettings
 from fastapi import APIRouter, HTTPException, Path, Query, status
 from pydantic import SerializeAsAny
 
@@ -52,7 +51,7 @@ async def get_projects() -> list[str]:
             summary="Find projects",
             description=_generate_route_desc(f'{_PAGE_PREFIX}.find_project'))
 async def find_project(
-        project_id: Annotated[str, Query(description="The project to be found")])-> ProjectSpecs|None:
+        project_id: Annotated[str, Query(description="The project to be found")]) -> ProjectSpecs | None:
     return projects.find_project(project_id=project_id)
 
 
@@ -60,9 +59,9 @@ async def find_project(
             summary="Get all terms of all projects",
             description=_generate_route_desc(f'{_PAGE_PREFIX}.get_all_terms_in_all_projects'))
 async def get_all_terms_in_all_projects(
-    selected_term_fields: \
-            Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                                                                            -> list[tuple[str, list[SerializeAsAny[DataDescriptor]]]]:
+    selected_term_fields: Annotated[list[str] | None,
+                                    Query(description="Selected term fields or null")] = None) \
+                                          -> list[tuple[str, list[SerializeAsAny[DataDescriptor]]]]:
     return projects.get_all_terms_in_all_projects(selected_term_fields=selected_term_fields)
 
 
@@ -83,7 +82,7 @@ async def valid_term_in_all_projects(
     try:
         return projects.valid_term_in_all_projects(value)
     except APIException as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
 
 
 @router.post("/terms/cross",
@@ -103,9 +102,9 @@ async def cross_terms_in_all_projects(
             description=_generate_route_desc(f'{_PAGE_PREFIX}.get_all_terms_in_project'))
 async def get_all_terms_in_project(
         project_id: Annotated[str, Path(description='The given project')],
-        selected_term_fields: \
-            Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                                                                            -> list[SerializeAsAny[DataDescriptor]]:
+        selected_term_fields: Annotated[list[str] | None,
+                                        Query(description="Selected term fields or null")] = None) \
+                                                            -> list[SerializeAsAny[DataDescriptor]]:
     return projects.get_all_terms_in_project(project_id=project_id,
                                              selected_term_fields=selected_term_fields)
 
@@ -117,7 +116,7 @@ async def find_terms_in_project(
         project_id: Annotated[str, Path(description='The given project')],
         term_id: Annotated[str, Query(description="The terms to be found")],
         settings: SearchSettings | None = None) -> list[SerializeAsAny[DataDescriptor]]:
-    return projects.find_terms_in_project(project_id=project_id, term_id=term_id,settings=settings)
+    return projects.find_terms_in_project(project_id=project_id, term_id=term_id, settings=settings)
 
 
 @router.get("/{project_id}/terms/valid",
@@ -129,7 +128,7 @@ async def valid_term_in_project(
     try:
         return projects.valid_term_in_project(value=value, project_id=project_id)
     except APIException as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
 
 
 @router.post("/{project_id}/terms/cross",
@@ -171,9 +170,9 @@ async def find_collections_in_project(
 async def get_terms_in_collection(
         project_id: Annotated[str, Path(description='The project of the collection')],
         collection_id: Annotated[str, Path(description='The given collection')],
-        selected_term_fields: \
-            Annotated[list[str] | None, Query(description="Selected term fields or null")] = None) \
-                                                                            -> list[SerializeAsAny[DataDescriptor]]:
+        selected_term_fields: Annotated[list[str] | None,
+                                        Query(description="Selected term fields or null")] = None) \
+                                                            -> list[SerializeAsAny[DataDescriptor]]:
     return projects.get_all_terms_in_collection(project_id=project_id, collection_id=collection_id,
                                                 selected_term_fields=selected_term_fields)
 
@@ -197,8 +196,8 @@ async def valid_term_in_collection(
         project_id: Annotated[str, Path(description='The project of the collection')],
         collection_id: Annotated[str, Path(description='A given collection')],
         value: Annotated[str, Query(description='The value to be validated')],
-        term_id: Annotated[str|None, Query(description='A specific term')] = None) \
-                                                             -> list[MatchingTerm]|ValidationReport:
+        term_id: Annotated[str | None, Query(description='A specific term')] = None) \
+                                                           -> list[MatchingTerm] | ValidationReport:
     try:
         if term_id:
             return projects.valid_term(value=value, project_id=project_id,
@@ -207,4 +206,4 @@ async def valid_term_in_collection(
             return projects.valid_term_in_collection(value=value, project_id=project_id,
                                                      collection_id=collection_id)
     except APIException as e:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e

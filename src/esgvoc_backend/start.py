@@ -7,6 +7,7 @@ _UVICORN_WORKERS_VAR_ENV_NAME = "WEB_CONCURRENCY"
 _UVICORN_PORT = 9999
 _APP = "esgvoc_backend.app:app"
 
+
 def main():
     n_workers = (
         int(os.environ[_UVICORN_WORKERS_VAR_ENV_NAME])
@@ -16,7 +17,7 @@ def main():
 
     uvicorn.run(
         app=_APP,
-        host="0.0.0.0",
+        host="localhost",
         port=_UVICORN_PORT,
         proxy_headers=True,
         forwarded_allow_ips="*",

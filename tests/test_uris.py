@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Any, Generator
 
 import pytest
 from fastapi import FastAPI
@@ -19,13 +19,14 @@ _SOME_URIS = [
     'universe/variable/arag',
 ]
 
+
 def _provide_uris() -> Generator:
     for expression in _SOME_URIS:
         yield expression
 
 
 @pytest.fixture(params=_provide_uris())
-def uri(request) -> dict[str, any]:
+def uri(request) -> dict[str, Any]:
     return request.param
 
 

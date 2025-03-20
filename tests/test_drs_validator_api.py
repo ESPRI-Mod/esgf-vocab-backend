@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Any, Generator
 
 import pytest
 from esgvoc.apps.drs.report import DrsValidationReport
@@ -28,7 +28,7 @@ _SOME_VALIDATION_PARAMS = [
      'expression_ko': 'CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn.',
      'error_kinds': ['ExtraChar']},
 
-     {'project_id': 'cmip6plus',
+    {'project_id': 'cmip6plus',
      'drs_type': 'filename',
      'expression_ok': 'od550aer_ACmon_MIROC6_amip_r2i2p1f2_gn_201211-201212.nc',
      'expression_ko': 'od550aer_ACmon_MIROC6_amip_r2i2p1f2_GUXX.nc',
@@ -42,7 +42,7 @@ def _provide_validation_params() -> Generator:
 
 
 @pytest.fixture(params=_provide_validation_params())
-def validation_param(request) -> dict[str, any]:
+def validation_param(request) -> dict[str, Any]:
     return request.param
 
 
