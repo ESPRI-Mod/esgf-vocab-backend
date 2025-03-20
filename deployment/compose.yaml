@@ -2,12 +2,11 @@ name: esgvoc-backend
 
 services:
     latest:
-        image: esgvoc-backend:latest
+        image: ghcr.io/espri-mod/esgf-vocab-backend
         ports:
             - 80:9999
         environment:
             - WEB_CONCURRENCY=5
-        build: .
         restart: always
 
     test:
@@ -17,4 +16,5 @@ services:
             - 8080:9999
         environment: !override
             - WEB_CONCURRENCY=1
+        build: .
         restart: no
