@@ -9,7 +9,7 @@ from esgvoc.api.search import MatchingTerm, SearchSettings
 from fastapi import APIRouter, HTTPException, Path, Query, status
 from pydantic import SerializeAsAny
 
-from esgvoc_backend.utils import _generate_route_desc
+from esgvoc_backend.naming import _generate_route_desc
 
 # Prefix for the API Web documentation of the route.
 _PAGE_PREFIX = 'projects.html#esgvoc.api.projects'

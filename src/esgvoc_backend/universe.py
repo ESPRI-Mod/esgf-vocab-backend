@@ -6,7 +6,7 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from fastapi import APIRouter, Path, Query
 from pydantic import SerializeAsAny
 
-from esgvoc_backend.utils import _generate_route_desc
+from esgvoc_backend.naming import _generate_route_desc
 
 # Prefix for the API Web documentation of the route.
 _PAGE_PREFIX = 'universe.html#esgvoc.api.universe'
