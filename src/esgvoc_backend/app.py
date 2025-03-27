@@ -1,12 +1,9 @@
 import time
 
-from fastapi import FastAPI, Request
+from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocValueError
+from fastapi import FastAPI, HTTPException, Request, status
 
-import esgvoc_backend.drs as drs
-import esgvoc_backend.index as index
-import esgvoc_backend.projects as projects
-import esgvoc_backend.universe as universe
-import esgvoc_backend.uris as uris
+from esgvoc_backend import drs, index, naming, projects, search, universe, uris, validation
 
 
 async def add_process_time_header(request: Request, call_next):
@@ -19,9 +16,11 @@ async def add_process_time_header(request: Request, call_next):
 
 def create_app() -> FastAPI:
     app = FastAPI()
-    app.include_router(universe.router)
-    app.include_router(projects.router)
-    app.include_router(drs.router)
+    app.include_router(universe.router, prefix=naming.API_PREFIX)
+    app.include_router(projects.router, prefix=naming.API_PREFIX)
+    app.include_router(drs.router, prefix=naming.API_PREFIX)
+    app.include_router(search.router, prefix=naming.API_PREFIX)
+    app.include_router(validation.router, prefix=naming.API_PREFIX)
     app.include_router(uris.router)
     app.include_router(index.router)
     app.middleware("http")(add_process_time_header)
@@ -29,3 +28,13 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+
+@app.exception_handler(EsgvocValueError)
+async def esgvoc_value_error_handler(_: Request, e: EsgvocValueError):
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
+
+
+@app.exception_handler(EsgvocNotFoundError)
+async def esgvoc_not_found_error_handler(_: Request, e: EsgvocNotFoundError):
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
