@@ -15,7 +15,7 @@ router = APIRouter(prefix="/cross")
             summary="Get the corresponding project terms",
             description=generate_route_desc(f'{PROJECTS_PAGE_PREFIX}.get_term_from_universe_term_id_in_project',
                                             f'{PROJECTS_PAGE_PREFIX}.get_term_from_universe_term_id_in_all_projects'))
-async def cross_terms_in_projects(
+async def cross_terms_in_project(
     data_descriptor_id: Annotated[str, Query(description="an id of a data descriptor")],
     universe_term_id: Annotated[str, Query(description="an id of a universe term")],
     project_id: Annotated[str | None, Query(description="an id of project")] = None,

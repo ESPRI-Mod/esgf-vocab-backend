@@ -14,7 +14,7 @@ router = APIRouter(prefix="/universe")
 @router.get("/terms",
             summary="Get all terms of the universe",
             description=generate_route_desc(f'{UNIVERSE_PAGE_PREFIX}.get_all_terms_in_universe'))
-async def get_terms_in_universe(
+async def get_all_terms_in_universe(
     selected_term_fields: Annotated[list[str] | None,
                                     Query(description="list of selected term fields, empty or null")] = None) \
                                                             -> list[SerializeAsAny[DataDescriptor]]:
@@ -36,7 +36,7 @@ async def get_term_in_universe(
 @router.get("/data_descriptors",
             summary="Get all the data descriptors",
             description=generate_route_desc(f'{UNIVERSE_PAGE_PREFIX}.get_all_data_descriptors_in_universe'))
-async def get_data_descriptors() -> list[str]:
+async def get_all_data_descriptors_in_universe() -> list[str]:
     return universe.get_all_data_descriptors_in_universe()
 
 
@@ -53,7 +53,7 @@ async def get_data_descriptor_in_universe(
 @router.get("/data_descriptors/{data_descriptor_id}/terms",
             summary="Get all terms of a given data descriptor",
             description=generate_route_desc(f'{UNIVERSE_PAGE_PREFIX}.get_all_terms_in_data_descriptor'))
-async def get_terms_in_data_descriptor(
+async def get_all_terms_in_data_descriptor(
     data_descriptor_id: Annotated[str, Path(description="an id of a data descriptor")],
     selected_term_fields: Annotated[list[str] | None,
                                     Query(description="list of selected term fields, empty or null")] = None) \

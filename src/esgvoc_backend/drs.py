@@ -51,7 +51,7 @@ def _validate(project_id: str, drs_type: DrsType, expression: str) -> DrsValidat
 @router.get('/{project_id}/validation/directory',
             summary="Validate an expression against the DRS directory specification of a given project",
             description=generate_route_desc(f'{DRS_VAL_PREFIX}.validate_directory'))
-async def valid_directory(
+async def validate_directory(
         project_id: Annotated[str, Path(description="an id of a project")],
         expression: Annotated[str, Query(description="The DRS expression to be validated")]) \
                                                                             -> DrsValidationReport:
@@ -62,7 +62,7 @@ async def valid_directory(
 @router.get('/{project_id}/validation/filename',
             summary="Validate an expression against the DRS file name specification of a given project",
             description=generate_route_desc(f'{DRS_VAL_PREFIX}.validate_file_name'))
-async def valid_file_name(
+async def validate_file_name(
         project_id: Annotated[str, Path(description="an id of a project")],
         expression: Annotated[str, Query(description="The DRS expression to be validated")]) \
                                                                             -> DrsValidationReport:
@@ -72,7 +72,7 @@ async def valid_file_name(
 @router.get('/{project_id}/validation/datasetid',
             summary="Validate an expression against the DRS dataset id specification of a given project",
             description=generate_route_desc(f'{DRS_VAL_PREFIX}.validate_dataset_id'))
-async def valid_dataset_id(
+async def validate_dataset_id(
         project_id: Annotated[str, Path(description="an id of a project")],
         expression: Annotated[str, Query(description="The DRS expression to be validated")]) \
                                                                             -> DrsValidationReport:
@@ -112,7 +112,7 @@ async def generate_dataset_id_from_mapping(
 @router.post('/{project_id}/generation/terms/directory',
              summary='Generate a DRS directory path for a given project from a bag of terms',
              description=generate_route_desc(f'{DRS_GEN_PREFIX}.generate_directory_from_bag_of_terms'))
-async def generate_directory_from_terms(
+async def generate_directory_from_bag_of_terms(
         project_id: Annotated[str, Path(description="an id of a project")],
         terms: list[str]) -> DrsGenerationReport:
     return _generate_from_terms(project_id=project_id, drs_type=DrsType.DIRECTORY, terms=terms)
@@ -121,7 +121,7 @@ async def generate_directory_from_terms(
 @router.post('/{project_id}/generation/terms/filename',
              summary='Generate a DRS file name for a given project from a bag of terms',
              description=generate_route_desc(f'{DRS_GEN_PREFIX}.generate_file_name_from_bag_of_terms'))
-async def generate_file_name_from_terms(
+async def generate_file_name_from_bag_of_terms(
         project_id: Annotated[str, Path(description="an id of a project")],
         terms: list[str]) -> DrsGenerationReport:
     return _generate_from_terms(project_id=project_id, drs_type=DrsType.FILE_NAME, terms=terms)
@@ -130,7 +130,7 @@ async def generate_file_name_from_terms(
 @router.post('/{project_id}/generation/terms/datasetid',
              summary='Generate a DRS dataset id for a given project from a bag of terms',
              description=generate_route_desc(f'{DRS_GEN_PREFIX}.generate_dataset_id_from_bag_of_terms'))
-async def generate_dataset_id_from_terms(
+async def generate_dataset_id_from_bag_of_terms(
         project_id: Annotated[str, Path(description="an id of a project")],
         terms: list[str]) -> DrsGenerationReport:
     return _generate_from_terms(project_id=project_id, drs_type=DrsType.DATASET_ID, terms=terms)

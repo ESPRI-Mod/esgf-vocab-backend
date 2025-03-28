@@ -1,121 +1,59 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-import esgvoc_backend.universe as universe
+from esgvoc_backend import universe
+from tests.utils import _test_get, data_descriptor_id, dd_term_ids, term_id  # noqa: F401
 
 _BASE_URL = 'http://localhost:9999/universe'
 
 _APP = FastAPI()
 _APP.include_router(universe.router)
 _CLIENT = TestClient(_APP, base_url=_BASE_URL, backend='asyncio')
-_SELECT = {'selected_term_fields': ['drs_name']}
 
 
-def _test_get(client: TestClient, url: str, params: dict | None, min_items: int, select: bool) -> None:
-    result = client.get(url=url, params=params)
-    result.raise_for_status()
-    if min_items > 0:
-        json_result = result.json()
-        assert json_result is not None
-        assert len(json_result) >= min_items
-        print(json_result)
-        if select:
-            if params:
-                params.update(_SELECT)
-            else:
-                params = _SELECT
-            result = client.get(url=url, params=params)
-            json_result = result.json()
-            assert len(json_result) >= min_items
-            if isinstance(json_result, list):
-                assert len(json_result[min_items-1]) == 3
-            else:
-                assert len(json_result) == 3
-    else:
-        assert result.json() is None
-
-
-def test_find_items_in_universe() -> None:
-    url = '/items/find'
-    params = {'expression': 'ipsl', 'only_id': True}
-    min_items = 1
-    select = False
-    _test_get(_CLIENT, url, params, min_items, select)
-
-
-def test_get_terms_in_universe() -> None:
+def test_get_terms_in_universe(term_id) -> None:  # noqa: F811
     url = '/terms'
     params = None
     min_items = 2000
     select = True
-    _test_get(_CLIENT, url, params, min_items, select)
+    _test_get(_CLIENT, url, params, min_items, term_id, select)
 
 
-def test_get_term_in_universe() -> None:
-    term_id = 'ipsl'
-    url = '/terms/get'
-    params = {'term_id': term_id}
+def test_get_term_in_universe(term_id) -> None:  # noqa: F811
+    url = f'/terms/{term_id}'
+    params = None
     min_items = 1
     select = True
-    _test_get(_CLIENT, url, params, min_items, select)
+    _test_get(_CLIENT, url, params, min_items, term_id, select)
 
 
-def test_find_terms_in_universe() -> None:
-    url = '/terms/find'
-    params = {'expression': 'IpsL'}
-    min_items = 2
-    select = True
-    _test_get(_CLIENT, url, params, min_items, select)
-
-
-def test_get_data_descriptors():
+def test_get_data_descriptors(data_descriptor_id):  # noqa: F811
     url = '/data_descriptors'
     params = None
     min_items = 10
     select = False
-    _test_get(_CLIENT, url, params, min_items, select)
+    _test_get(_CLIENT, url, params, min_items, data_descriptor_id, select)
 
 
-def test_get_data_descriptor():
-    data_descriptor_id = 'institution'
-    url = '/data_descriptors/get'
-    params = {'data_descriptor_id': data_descriptor_id}
-    min_items = 1
-    select = False
-    _test_get(_CLIENT, url, params, min_items, select)
-
-
-def test_find_data_descriptors() -> None:
-    url = '/data_descriptors/find'
-    params = {'expression': 'InstitutioN'}
-    min_items = 1
-    select = False
-    _test_get(_CLIENT, url, params, min_items, select)
-
-
-def test_get_terms_in_data_descriptor() -> None:
-    data_descriptor_id = 'institution'
-    url = f'/data_descriptors/{data_descriptor_id}/terms'
+def test_get_data_descriptor(data_descriptor_id):  # noqa: F811
+    url = f'/data_descriptors/{data_descriptor_id}'
     params = None
-    min_items = 10
+    min_items = 1
+    select = False
+    _test_get(_CLIENT, url, params, min_items, data_descriptor_id, select)
+
+
+def test_get_terms_in_data_descriptor(dd_term_ids) -> None:  # noqa: F811
+    url = f'/data_descriptors/{dd_term_ids[0]}/terms'
+    params = None
+    min_items = 3
     select = True
-    _test_get(_CLIENT, url, params, min_items, select)
+    _test_get(_CLIENT, url, params, min_items, dd_term_ids[1], select)
 
 
-def test_get_term_in_data_descriptor() -> None:
-    data_descriptor_id = 'institution'
-    term_id = 'ipsl'
-    url = f'/data_descriptors/{data_descriptor_id}/terms/get'
-    params = {'term_id': term_id}
+def test_get_term_in_data_descriptor(dd_term_ids) -> None:  # noqa: F811
+    url = f'/data_descriptors/{dd_term_ids[0]}/terms/{dd_term_ids[1]}'
+    params = None
     min_items = 1
     select = True
-    _test_get(_CLIENT, url, params, min_items, select)
-
-
-def test_find_terms_in_data_descriptor() -> None:
-    data_descriptor_id = 'institution'
-    url = f'/data_descriptors/{data_descriptor_id}/terms/find'
-    params = {'expression': 'IpsL NOT CNES'}
-    min_items = 1
-    select = True
-    _test_get(_CLIENT, url, params, min_items, select)
+    _test_get(_CLIENT, url, params, min_items, dd_term_ids[1], select)

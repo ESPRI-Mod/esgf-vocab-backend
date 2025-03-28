@@ -41,10 +41,10 @@ async def find_items_in_project(
 
 
 @router.get("/terms/universe",
-            summary="Find terms in the universe",
+            summary="Find terms in the universe and a data descriptor",
             description=generate_route_desc(f'{UNIVERSE_PAGE_PREFIX}.find_terms_in_universe',
                                             f'{UNIVERSE_PAGE_PREFIX}.find_terms_in_data_descriptor'))
-async def find_terms_in_universe(
+async def find_terms_in_universe_data_descriptor(
     expression: Annotated[str, Query(description="keywords and boolean operators")],
     data_descriptor_id: Annotated[str | None, Query(description="An id of a data descriptor")] = None,
     only_id: Annotated[bool, Query(description="search in id otherwise all specifications")] = False,
@@ -66,10 +66,10 @@ async def find_terms_in_universe(
 
 
 @router.get("/terms/projects",
-            summary="Find terms in projects",
+            summary="Find terms in a project and a collection",
             description=generate_route_desc(f'{PROJECTS_PAGE_PREFIX}.find_terms_in_project',
                                             f'{PROJECTS_PAGE_PREFIX}.find_terms_in_collection'))
-async def find_terms_in_projects(
+async def find_terms_in_project_collection(
     expression: Annotated[str, Query(description="keywords and boolean operators")],
     project_id: Annotated[str, Query(description="an id of a project")],
     collection_id: Annotated[str | None, Query(description="an id of a collection")] = None,
@@ -94,7 +94,7 @@ async def find_terms_in_projects(
 @router.get("/data_descriptors",
             summary="Find data descriptors in the universe",
             description=generate_route_desc(f'{UNIVERSE_PAGE_PREFIX}.find_data_descriptors_in_universe'))
-async def find_data_descriptors(
+async def find_data_descriptors_in_universe(
     expression: Annotated[str, Query(description="keywords and boolean operators")],
     only_id: Annotated[bool, Query(description="search in id otherwise all specifications")] = False,
     limit: Annotated[int | None, Query(description="limit the number of returned items found")] = None,
@@ -105,7 +105,7 @@ async def find_data_descriptors(
 
 
 @router.get("/collections",
-            summary="Find collections in a given project",
+            summary="Find collections in a project",
             description=generate_route_desc(f'{PROJECTS_PAGE_PREFIX}.find_collections_in_project'))
 async def find_collections_in_project(
     expression: Annotated[str, Query(description="keywords and boolean operators")],

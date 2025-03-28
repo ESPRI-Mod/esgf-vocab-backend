@@ -15,7 +15,7 @@ router = APIRouter(prefix="/projects")
 @router.get("/",
             summary="Get all project ids",
             description=generate_route_desc(f'{PROJECTS_PAGE_PREFIX}.get_all_projects'))
-async def get_projects() -> list[str]:
+async def get_all_projects() -> list[str]:
     return projects.get_all_projects()
 
 
@@ -57,15 +57,26 @@ async def get_term_in_project(
 @router.get("/{project_id}/collections",
             summary="Get all collection ids of a given project",
             description=generate_route_desc(f'{PROJECTS_PAGE_PREFIX}.get_all_collections_in_project'))
-async def get_collections_in_project(project_id: Annotated[str, Path(description='an id of a project')]) -> list[str]:
+async def get_all_collections_in_project(project_id: Annotated[str,
+                                         Path(description='an id of a project')]) -> list[str]:
     result = projects.get_all_collections_in_project(project_id=project_id)
+    return check_result(result)
+
+
+@router.get("/{project_id}/collections/{collection_id}",
+            summary="Get a collection of a given project",
+            description=generate_route_desc(f'{PROJECTS_PAGE_PREFIX}.get_collection_in_project'))
+async def get_collection_in_project(
+        project_id: Annotated[str, Path(description='an id of a project')],
+        collection_id: Annotated[str, Path(description='an id of a collection')]) -> tuple[str, dict]:
+    result = projects.get_collection_in_project(project_id=project_id, collection_id=collection_id)
     return check_result(result)
 
 
 @router.get("/{project_id}/collections/{collection_id}/terms",
             summary="Get all terms of a given collection",
             description=generate_route_desc(f'{PROJECTS_PAGE_PREFIX}.get_all_terms_in_collection'))
-async def get_terms_in_collection(
+async def get_all_terms_in_collection(
     project_id: Annotated[str, Path(description='an id of a project')],
     collection_id: Annotated[str, Path(description='an id of a collection')],
     selected_term_fields: Annotated[list[str] | None,
