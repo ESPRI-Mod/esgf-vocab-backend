@@ -14,7 +14,7 @@ from tests.api_inputs import (  # noqa: F401
 )
 from tests.utils import convert_drs_type
 
-_BASE_URL = 'http://localhost:9999/drs'
+_BASE_URL = 'http://localhost:9999/apps/drs'
 
 
 _APP = FastAPI()

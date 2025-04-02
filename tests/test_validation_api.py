@@ -29,7 +29,7 @@ def _test_validation(client: TestClient, url: str, params: dict, query: Validati
 
 
 def test_valid_term_all_projects(val_query) -> None:
-    url = '/terms'
+    url = '/term'
     params = {'value': val_query.value}
     query = ValidationExpression(value=val_query.value, item=val_query.item,
                                  nb_matching_terms=val_query.nb_matching_terms*LEN_PROJECTS,
@@ -38,20 +38,20 @@ def test_valid_term_all_projects(val_query) -> None:
 
 
 def test_valid_term_in_project(val_query) -> None:
-    url = '/terms'
+    url = '/term'
     params = {'value': val_query.value, 'project_id': val_query.item.project_id}
     _test_validation(client=_CLIENT, url=url, params=params, query=val_query)
 
 
 def test_valid_term_in_collection(val_query) -> None:
-    url = '/terms'
+    url = '/term'
     params = {'value': val_query.value, 'project_id': val_query.item.project_id,
               'collection_id': val_query.item.collection_id}
     _test_validation(client=_CLIENT, url=url, params=params, query=val_query)
 
 
 def test_valid_term(val_query) -> None:
-    url = '/terms'
+    url = '/term'
     params = {'value': val_query.value, 'project_id': val_query.item.project_id,
               'collection_id': val_query.item.collection_id, 'term_id': val_query.item.term_id}
     results = _CLIENT.get(url=url, params=params)
