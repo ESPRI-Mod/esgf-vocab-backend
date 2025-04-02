@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, Path, Query, status
 
 from esgvoc_backend.naming import DRS_GEN_PREFIX, DRS_VAL_PREFIX, generate_route_desc
 
-router = APIRouter(prefix="/drs")
+router = APIRouter(prefix="/apps/drs")
 
 # [OPTIMIZATION]
 _VALIDATORS: dict[str, DrsValidator] = dict()

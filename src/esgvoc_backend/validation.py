@@ -10,7 +10,7 @@ from esgvoc_backend.naming import PROJECTS_PAGE_PREFIX, generate_route_desc
 router = APIRouter(prefix="/validation")
 
 
-@router.get("/terms",
+@router.get("/term",
             summary="Valid a term",
             description=generate_route_desc(f'{PROJECTS_PAGE_PREFIX}.valid_term_in_all_projects',
                                             f'{PROJECTS_PAGE_PREFIX}.valid_term_in_project',
