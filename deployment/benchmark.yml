@@ -9,7 +9,7 @@ plan:
   - name: Project id
     assign:
       key: project_id
-      value: cmip6
+      value: cmip6plus
 
 
   - name: Data descriptor id
@@ -24,10 +24,40 @@ plan:
       value: variable_id
 
 
-  - name: Value
+  - name: Term id
     assign:
-      key: value
+      key: term_id
       value: airmass
+
+
+  - name: Value 1
+    assign:
+      key: value1
+      value: airmass
+
+
+  - name: Value 2
+    assign:
+      key: value2
+      value: acabf
+
+
+  - name: Value 3
+    assign:
+      key: value3
+      value: aragos
+
+
+  - name: Value 4
+    assign:
+      key: value4
+      value: bsi
+
+
+  - name: Search expression
+    assign:
+      key: expression
+      value: IpsL NOT CNES
 
 
   - name: DRS directory expression
@@ -48,126 +78,176 @@ plan:
       value: CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn
 
 
-  - name: Fetch terms
+  - name: universe URI
     request:
-      url: /universe/terms
+      url: /universe/{{ data_descriptor_id }}/{{ term_id }}
 
 
-  - name: Get all terms of the universe
+  - name: project URI
     request:
-      url: /universe/terms
+      url: /{{ project_id }}/{{ collection_id }}/{{ term_id }}
 
 
-  - name: Get all the data descriptors
+  - name: get_all_terms_in_universe
     request:
-      url: /universe/data_descriptors
+      url: /api/v1/universe/terms
 
 
-  - name: Get all terms of a given data descriptor
+  - name: get_term_in_universe
     request:
-      url: /universe/data_descriptors/{{ data_descriptor_id }}/terms
+      url: /api/v1/universe/terms/{{ term_id }}
 
 
-  - name: Get all project ids
+  - name: get_data_descriptor_in_universe
     request:
-      url: /projects/
+      url: /api/v1/universe/data_descriptors/{{ data_descriptor_id }}
 
 
-  - name: Find projects
+  - name: get_term_in_data_descriptor
     request:
-      url: /projects/find?project_id={{ project_id }}
+      url: /api/v1/universe/data_descriptors/{{ data_descriptor_id }}/terms/{{ term_id }}
 
 
-  - name: Get all terms of all projects
+  - name: get_all_data_descriptors_in_universe
     request:
-      url: /projects/terms
+      url: /api/v1/universe/data_descriptors
 
 
-  - name: Valid term against all terms of in all projects
+  - name: get_all_terms_in_data_descriptor
     request:
-      url: /projects/terms/valid?value={{ value }}
+      url: /api/v1/universe/data_descriptors/{{ data_descriptor_id }}/terms
 
 
-  - name: Get all terms of a given project
+  - name: get_all_projects
     request:
-      url: /projects/{{ project_id }}/terms
+      url: /api/v1/projects
 
 
-  - name: Valid term against all terms of a given project
+  - name: get_project
     request:
-      url: /projects/{{ project_id }}/terms/valid?value={{ value }}
+      url: /api/v1/projects/{{ project_id }}
 
 
-  - name: Get all collection ids of a given project
+  - name: get_term_in_project
     request:
-      url: /projects/{{ project_id }}/collections
+      url: /api/v1/projects/{{ project_id }}/terms/{{ term_id }}
 
 
-  - name: Get all terms of a given collection
+  - name: get_collection_in_project
     request:
-      url: /projects/{{ project_id }}/collections/{{ collection_id }}/terms
+      url: /api/v1/projects/{{ project_id }}/collections/{{ collection_id }}
 
 
-  - name: Valid term against a specific term or all terms of a given collection
+  - name: get_term_in_collection
     request:
-      url: /projects/{{ project_id }}/collections/{{ collection_id }}/terms/valid?value={{ value }}
+      url: /api/v1/projects/{{ project_id }}/collections/{{ collection_id }}/terms/{{ term_id }}
 
 
-
-  - name: Validate an expression against the DRS directory specification of a given project
+  - name: get_all_terms_in_project
     request:
-      url: /drs/{{ project_id }}/validation/directory?expression={{ dir_expression }}
+      url: /api/v1/projects/{{ project_id }}/terms
 
 
-  - name: Validate an expression against the DRS file name specification of a given project
+  - name: get_all_collections_in_project
     request:
-      url: /drs/{{ project_id }}/validation/filename?expression={{ file_expression }}
+      url: /api/v1/projects/{{ project_id }}/collections
 
 
-  - name: Validate an expression against the DRS dataset id specification of a given project
+  - name: get_all_terms_in_collection
     request:
-      url: /drs/{{ project_id }}/validation/datasetid?expression={{ dataset_expression }}
+      url: /api/v1/projects/{{ project_id }}/collections/{{ collection_id }}/terms
 
 
-    # POST
-    # /universe/data_descriptors/find
-    # Find data descriptors in the universe
-    # POST
-    # /universe/data_descriptors/{data_descriptor_id}/terms/find
-    # Find terms in a given data descriptor
-    # POST
-    # /projects/terms/find
-    # Find terms in all projects
-    # POST
-    # /projects/terms/cross
-    # Find terms according to a given data descriptor in all projects
-    # POST
-    # /projects/{{ project_id }}/terms/find
-    # Find terms in a given project
-    # POST
-    # /projects/{{ project_id }}/terms/cross
-    # Find terms according to a given data descriptor in a given project
-    # POST
-    # /projects/{{ project_id }}/collections/find
-    # Find collections in a given project
-    # POST
-    # /projects/{{ project_id }}/collections/{collection_id}/terms/find
-    # Find terms in a given collection
-    # POST
-    # /drs/{{ project_id }}/generation/mapping/directory
-    # Generate a DRS directory path for a given project from a mapping of collections and terms
-    # POST
-    # /drs/{{ project_id }}/generation/mapping/filename
-    # Generate a DRS file name for a given project from a mapping of collections and terms
-    # POST
-    # /drs/{{ project_id }}/generation/mapping/datasetid
-    # Generate a DRS dataset id for a given project from a mapping of collections and terms
-    # POST
-    # /drs/{{ project_id }}/generation/terms/directory
-    # Generate a DRS directory path for a given project from a bag of terms
-    # POST
-    # /drs/{{ project_id }}/generation/terms/filename
-    # Generate a DRS file name for a given project from a bag of terms
-    # POST
-    # /drs/{{ project_id }}/generation/terms/datasetid
-    # Generate a DRS dataset id for a given project from a bag of terms
+  - name: get_collection_from_data_descriptor_in_all_projects
+    request:
+      url: /api/v1/cross/collections?data_descriptor_id={{ data_descriptor_id }}
+
+
+  - name: get_collection_from_data_descriptor_in_project
+    request:
+      url: /api/v1/cross/collections?project_id={{ project_id }}&data_descriptor_id={{ data_descriptor_id }}
+
+
+  - name: get_term_from_universe_term_id_in_all_projects
+    request:
+      url: /api/v1/cross/terms?data_descriptor_id={{ data_descriptor_id }}&universe_term_id={{ term_id }}
+
+
+  - name: get_term_from_universe_term_id_in_project
+    request:
+      url: /api/v1/cross/terms?project_id={{ project_id }}&data_descriptor_id={{ data_descriptor_id }}&universe_term_id={{ term_id }}
+
+
+  - name: find_terms_in_universe
+    request:
+      url: /api/v1/search/terms/universe?expression={{ expression }}
+
+
+  - name: find_terms_in_data_descriptor
+    request:
+      url: /api/v1/search/terms/universe?expression={{ expression }}&data_descriptor_id={{ data_descriptor_id }}
+
+
+  - name: find_terms_in_project
+    request:
+      url: /api/v1/search/terms/projects?expression={{ expression }}&project_id={{ project_id }}
+
+
+  - name: find_terms_in_collection
+    request:
+      url: /api/v1/search/terms/projects?expression={{ expression }}&project_id={{ project_id }}&collection_id={{ collection_id }}
+
+
+  - name: find_data_descriptors_in_universe
+    request:
+      url: /api/v1/search/data_descriptors?expression={{ expression }}
+
+
+  - name: find_collections_in_project
+    request:
+      url: /api/v1/search/collections?expression={{ expression }}&project_id={{ project_id }}
+
+
+  - name: find_items_in_universe
+    request:
+      url: /api/v1/search/items/universe?expression={{ expression }}
+
+
+  - name: find_items_in_project
+    request:
+      url: /api/v1/search/items/projects?expression={{ expression }}&project_id={{ project_id }}
+
+
+  - name: valid_term_in_all_projects
+    request:
+      url: /api/v1/validation/term?value={{ value1 }}
+
+
+  - name: valid_term_in_project
+    request:
+      url: /api/v1/validation/term?value={{ value2 }}&project_id={{ project_id }}
+
+
+  - name: valid_term_in_collection
+    request:
+      url: /api/v1/validation/term?value={{ value3 }}&project_id={{ project_id }}&collection_id={{ collection_id }}
+
+
+  - name: valid_term
+    request:
+      url: /api/v1/validation/term?value={{ value4 }}&project_id={{ project_id }}&collection_id={{ collection_id }}&term_id={{ term_id }}
+
+
+  - name: validate_directory
+    request:
+      url: /api/v1/apps/drs/{{ project_id }}/validation/directory?expression={{ dir_expression }}
+
+
+  - name: validate_file_name
+    request:
+      url: /api/v1/apps/drs/{{ project_id }}/validation/filename?expression={{ file_expression }}
+
+
+  - name: validate_dataset_id
+    request:
+      url: /api/v1/apps/drs/{{ project_id }}/validation/datasetid?expression={{ dataset_expression }}
