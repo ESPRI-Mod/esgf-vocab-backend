@@ -1,14 +1,11 @@
 from typing import Any, Generator
 
 import pytest
-from fastapi import FastAPI
 
 import esgvoc_backend.uris as uris
 from tests.utils import client_factory
 
 router = uris.router
-_APP = FastAPI()
-_APP.include_router(router)
 
 @pytest.fixture(scope='module')
 def client(request):

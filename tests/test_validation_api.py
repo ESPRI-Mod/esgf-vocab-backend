@@ -4,15 +4,12 @@ import httpx
 import pytest
 from esgvoc.api.report import ValidationReport
 from esgvoc.api.search import MatchingTerm
-from fastapi import FastAPI
 
 from esgvoc_backend import validation
 from tests.api_inputs import LEN_PROJECTS, ValidationExpression, check_validation, val_query  # noqa: F401
 from tests.utils import client_factory, instantiate
 
 router = validation.router
-_APP = FastAPI()
-_APP.include_router(router)
 
 @pytest.fixture(scope='module')
 def client(request):

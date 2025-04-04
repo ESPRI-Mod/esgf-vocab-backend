@@ -1,13 +1,10 @@
 import pytest
-from fastapi import FastAPI
 
 from esgvoc_backend import universe
 from tests.api_inputs import get_param  # noqa: F401
 from tests.utils import _test_get, client_factory
 
 router = universe.router
-_APP = FastAPI()
-_APP.include_router(router)
 
 @pytest.fixture(scope='module')
 def client(request):

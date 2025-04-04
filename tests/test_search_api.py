@@ -1,6 +1,5 @@
 import pytest
 from esgvoc.api.search import ItemKind
-from fastapi import FastAPI
 
 from esgvoc_backend import search
 from tests.api_inputs import (  # noqa: F401
@@ -13,8 +12,6 @@ from tests.api_inputs import (  # noqa: F401
 from tests.utils import _test_get, client_factory
 
 router = search.router
-_APP = FastAPI()
-_APP.include_router(router)
 
 @pytest.fixture(scope='module')
 def client(request):

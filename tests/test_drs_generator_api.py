@@ -4,7 +4,6 @@ from typing import Iterable, Mapping
 import httpx
 import pytest
 from esgvoc.apps.drs.report import DrsGenerationReport
-from fastapi import FastAPI
 
 import esgvoc_backend.drs as drs
 from tests.api_inputs import (  # noqa: F401
@@ -16,8 +15,6 @@ from tests.api_inputs import (  # noqa: F401
 from tests.utils import client_factory, convert_drs_type
 
 router = drs.router
-_APP = FastAPI()
-_APP.include_router(router)
 
 @pytest.fixture(scope='module')
 def client(request):
