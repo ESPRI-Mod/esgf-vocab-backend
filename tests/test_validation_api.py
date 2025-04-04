@@ -7,7 +7,7 @@ from esgvoc.api.search import MatchingTerm
 
 from esgvoc_backend import validation
 from tests.api_inputs import LEN_PROJECTS, ValidationExpression, check_validation, val_query  # noqa: F401
-from tests.utils import client_factory, instantiate
+from tests.utils import client_factory, instantiate_from_json
 
 router = validation.router
 
@@ -20,7 +20,7 @@ def _test_validation(client: httpx.Client, url: str, params: dict, query: Valida
     results = client.get(url=url, params=params)
     results.raise_for_status()
     json_results = results.json()
-    matching_terms = instantiate(json_results)
+    matching_terms = instantiate_from_json(json_results)
     if matching_terms is None:
         matching_terms = list()
     elif not isinstance(matching_terms, list):
