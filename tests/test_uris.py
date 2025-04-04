@@ -2,14 +2,18 @@ from typing import Any, Generator
 
 import pytest
 from fastapi import FastAPI
-from fastapi.testclient import TestClient
 
 import esgvoc_backend.uris as uris
+from tests.utils import client_factory
 
-_BASE_URL = 'http://localhost:9999'
+router = uris.router
 _APP = FastAPI()
-_APP.include_router(uris.router)
-_CLIENT = TestClient(_APP, base_url=_BASE_URL, backend='asyncio')
+_APP.include_router(router)
+
+@pytest.fixture(scope='module')
+def client(request):
+    return client_factory(request, router, False)
+
 
 _SOME_URIS = [
     'cmip6plus/variable_id/bsi',
@@ -30,6 +34,6 @@ def uri(request) -> dict[str, Any]:
     return request.param
 
 
-def test_uris(uri) -> None:
-    result = _CLIENT.get(url=uri)
+def test_uris(client, uri) -> None:
+    result = client.get(url=uri)
     result.raise_for_status()

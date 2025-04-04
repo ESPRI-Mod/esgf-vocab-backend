@@ -1,3 +1,4 @@
+import httpx
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.api.project_specs import DrsType, ProjectSpecs
@@ -6,7 +7,11 @@ from fastapi.testclient import TestClient
 
 from tests.api_inputs import check_id
 
+_API_VERSION = 'v1'
 _SELECT = {'selected_term_fields': ['drs_name', 'nothing']}
+_LOCAL_BASE_URL = 'http://localhost:9999'
+_DEFAULT_REMOTE_HOST_BASE_URL = 'http://es-vocab.ipsl.fr'
+_DEFAULT_REMOTE_API_BASE_URL = f'{_DEFAULT_REMOTE_HOST_BASE_URL}/api/{_API_VERSION}'
 
 
 def instantiate(obj: list| dict | str) -> str | DataDescriptor | tuple | list | ProjectSpecs | \
@@ -40,7 +45,7 @@ def instantiate(obj: list| dict | str) -> str | DataDescriptor | tuple | list | 
     return result
 
 
-def _test_get(client: TestClient, url: str, params: dict | None,
+def _test_get(client: httpx.Client, url: str, params: dict | None,
               id: str | None, select: bool,
               kind: ItemKind | None = None, parent_id: str | None = None) -> None:
     result = client.get(url=url, params=params)
@@ -77,3 +82,16 @@ def convert_drs_type(drs_type: DrsType) -> str:
         case _:
             raise TypeError(f"unsupported drs type '{drs_type}'")
     return result
+
+
+def client_factory(request, router, is_api: bool = True) -> httpx.Client:
+    match request.param:
+        case 'local':
+            return TestClient(router, base_url=f'{_LOCAL_BASE_URL}{router.prefix}', backend='asyncio')
+        case 'prod':
+            if is_api:
+                return httpx.Client(base_url=f'{_DEFAULT_REMOTE_API_BASE_URL}{router.prefix}')
+            else:
+                return httpx.Client(base_url=f'{_DEFAULT_REMOTE_HOST_BASE_URL}{router.prefix}')
+        case _:
+            raise RuntimeError(f"unsupported client type '{request.param}'")
