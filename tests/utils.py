@@ -8,10 +8,9 @@ from fastapi.testclient import TestClient
 from tests.api_inputs import check_id
 
 _API_VERSION = 'v1'
+_API_PREFIX_URL = f'/api/{_API_VERSION}'
+_LOCALHOST = 'localhost:9999'
 _SELECT = {'selected_term_fields': ['drs_name', 'nothing']}
-_LOCAL_BASE_URL = 'http://localhost:9999'
-_DEFAULT_REMOTE_HOST_BASE_URL = 'http://es-vocab.ipsl.fr'
-_DEFAULT_REMOTE_API_BASE_URL = f'{_DEFAULT_REMOTE_HOST_BASE_URL}/api/{_API_VERSION}'
 
 
 def instantiate(obj: list| dict | str) -> str | DataDescriptor | tuple | list | ProjectSpecs | \
@@ -85,13 +84,10 @@ def convert_drs_type(drs_type: DrsType) -> str:
 
 
 def client_factory(request, router, is_api: bool = True) -> httpx.Client:
-    match request.param:
-        case 'local':
-            return TestClient(router, base_url=f'{_LOCAL_BASE_URL}{router.prefix}', backend='asyncio')
-        case 'prod':
-            if is_api:
-                return httpx.Client(base_url=f'{_DEFAULT_REMOTE_API_BASE_URL}{router.prefix}')
-            else:
-                return httpx.Client(base_url=f'{_DEFAULT_REMOTE_HOST_BASE_URL}{router.prefix}')
-        case _:
-            raise RuntimeError(f"unsupported client type '{request.param}'")
+    if request.param:
+        if is_api:
+            return httpx.Client(base_url=f'http://{request.param}{_API_PREFIX_URL}{router.prefix}')
+        else:
+            return httpx.Client(base_url=f'http://{request.param}{router.prefix}')
+    else:
+        return TestClient(router, base_url=f'http://{_LOCALHOST}{router.prefix}', backend='asyncio')
