@@ -1,0 +1,25 @@
+name: Pull request test
+
+on:
+  pull_request:
+    branches:
+      - tmp
+
+jobs:
+  test_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rye
+        uses: eifinger/setup-rye@v4
+        with:
+          enable-cache: true
+
+      - name: Rye sync
+        run: rye sync
+
+      - name: Test
+        run: rye run pytest tests
