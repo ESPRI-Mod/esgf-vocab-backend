@@ -13,13 +13,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Rye
+      - name: Rye install
         uses: eifinger/setup-rye@v4
         with:
           enable-cache: true
 
       - name: Rye sync
         run: rye sync
+
+      - name: ESGVOC install
+        run: rye run esgvoc install
 
       - name: Test
         run: rye run pytest tests
