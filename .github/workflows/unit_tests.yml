@@ -1,4 +1,4 @@
-name: Pull request test
+name: Unit tests
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  pr_test:
+  unit_tests:
     runs-on: ubuntu-latest
 
     steps:
