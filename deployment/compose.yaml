@@ -6,7 +6,7 @@ services:
         ports:
             - 80:9999
         environment:
-            - WEB_CONCURRENCY=5
+            - WEB_CONCURRENCY=7
         restart: always
 
     test:
