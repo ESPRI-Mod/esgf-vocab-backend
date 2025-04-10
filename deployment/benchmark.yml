@@ -1,7 +1,7 @@
 ---
 
 concurrency: 20
-base: 'http://es-vocab.ipsl.fr'
+base: 'https://esgvoc.ipsl.fr'
 iterations: 100
 rampup: 5
 
