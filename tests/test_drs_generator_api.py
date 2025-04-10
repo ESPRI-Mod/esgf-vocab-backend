@@ -33,7 +33,7 @@ def _check_generation(client: httpx.Client,
         body = drs_generation_expression.terms
     drs_type = convert_drs_type(drs_generation_expression.drs_type)
     url = f"/{drs_generation_expression.project_id}/generation/{url_discriminant}/{drs_type}"
-    result = client.post(url=url, data=json.dumps(body))  # type: ignore
+    result = client.post(url=url, content=json.dumps(body))  # type: ignore
     result.raise_for_status()
     report = DrsGenerationReport(**result.json())
     check_drs_generated_expression(drs_generation_expression, report)
