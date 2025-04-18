@@ -13,16 +13,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Rye install
-        uses: eifinger/setup-rye@v4
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
 
-      - name: Rye sync
-        run: rye sync
+      - name: Sync
+        run: uv sync
 
       - name: ESGVOC install
-        run: rye run esgvoc install
+        run: uv run esgvoc install
 
       - name: Test
-        run: rye run pytest tests
+        run: uv run pytest tests

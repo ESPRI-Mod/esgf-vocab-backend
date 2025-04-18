@@ -17,7 +17,7 @@ dependencies = [
     "uvicorn>=0.34.0",
 ]
 readme = "README.md"
-requires-python = ">= 3.12, <3.13"
+requires-python = ">= 3.12"
 
 [build-system]
 requires = ["hatchling==1.26.3"]
@@ -28,15 +28,18 @@ Repository = "https://github.com/ESPRI-Mod/esgf-vocab-backend"
 
 ######## TOOLS ########
 
-[tool.rye]
+[tool.uv]
 managed = true
-dev-dependencies = [
+default-groups = "all"
+
+[dependency-groups]
+dev = [
     "mypy>=1.13.0",
     "pre-commit>=4.1.0",
     "ruff>=0.11.0",
     "pytest>=8.3.4",
     "httpx>=0.28.1",
-    "hatch>=1.14.0", # Required for version updating through rye.
+    "hatch>=1.14.0", # Required for version updating through uv.
     "pytest-cov>=6.0.0",
     "wily>=1.25.0",
     "flake8>=7.1.2",
@@ -47,9 +50,6 @@ dev-dependencies = [
 log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-
-[tool.rye.scripts]
-server.call = "esgvoc_backend.start:main"
 
 [tool.hatch.metadata]
 allow-direct-references = true
