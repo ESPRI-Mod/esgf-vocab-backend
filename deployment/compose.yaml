@@ -8,6 +8,12 @@ services:
         environment:
             - WEB_CONCURRENCY=7
         restart: always
+        secrets:
+            - gh_web_hook_secret
+        volumes:
+            - type: bind
+              source: update
+              target: /var/www/esgvoc-backend/update
 
     test:
         extends: latest
@@ -18,3 +24,13 @@ services:
             - WEB_CONCURRENCY=1
         build: .
         restart: no
+        secrets:
+            - gh_web_hook_secret
+        volumes:
+            - type: bind
+              source: update_test
+              target: /var/www/esgvoc-backend/update
+
+secrets:
+  gh_web_hook_secret:
+    file: ./gh_web_hook_secret

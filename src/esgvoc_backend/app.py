@@ -3,7 +3,7 @@ import time
 from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocValueError
 from fastapi import FastAPI, HTTPException, Request, status
 
-from esgvoc_backend import cross, drs, index, naming, projects, search, universe, uris, validation
+from esgvoc_backend import cross, drs, index, naming, projects, search, universe, update, uris, validation
 
 
 async def add_process_time_header(request: Request, call_next):
@@ -22,6 +22,7 @@ def create_app() -> FastAPI:
     app.include_router(search.router, prefix=naming.API_PREFIX)
     app.include_router(validation.router, prefix=naming.API_PREFIX)
     app.include_router(cross.router, prefix=naming.API_PREFIX)
+    app.include_router(update.router, prefix=naming.API_PREFIX)
     app.include_router(uris.router)
     app.include_router(index.router)
     app.middleware("http")(add_process_time_header)
