@@ -5,7 +5,8 @@ from esgvoc.api.report import ValidationReport
 from esgvoc.api.search import MatchingTerm
 from fastapi import APIRouter, Query
 
-from esgvoc_backend.naming import PROJECTS_PAGE_PREFIX, generate_route_desc
+from esgvoc_backend.naming import PROJECTS_PAGE_PREFIX
+from esgvoc_backend.utils import generate_route_desc
 
 router = APIRouter(prefix="/validation")
 

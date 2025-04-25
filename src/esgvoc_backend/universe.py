@@ -5,8 +5,8 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from fastapi import APIRouter, Path, Query
 from pydantic import SerializeAsAny
 
-from esgvoc_backend.naming import UNIVERSE_PAGE_PREFIX, generate_route_desc
-from esgvoc_backend.utils import check_result
+from esgvoc_backend.naming import UNIVERSE_PAGE_PREFIX
+from esgvoc_backend.utils import check_result, generate_route_desc
 
 router = APIRouter(prefix="/universe")
 
