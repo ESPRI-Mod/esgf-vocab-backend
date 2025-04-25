@@ -85,8 +85,8 @@ def convert_drs_type(drs_type: DrsType) -> str:
 def client_factory(request, router, is_api: bool = True) -> httpx.Client:
     if request.param:
         if is_api:
-            return httpx.Client(base_url=f'https://{request.param}{API_PREFIX}{router.prefix}')
+            return httpx.Client(base_url=f'{request.param}{API_PREFIX}{router.prefix}')
         else:
-            return httpx.Client(base_url=f'https://{request.param}{router.prefix}')
+            return httpx.Client(base_url=f'{request.param}{router.prefix}')
     else:
-        return TestClient(router, base_url=f'https://{_LOCALHOST}{router.prefix}', backend='asyncio')
+        return TestClient(router, base_url=f'http://{_LOCALHOST}{router.prefix}', backend='asyncio')
