@@ -1,3 +1,5 @@
+ESGVOC_ROOT_LOGGER_NAME = 'esgvoc'
+LOG_LEVEL = 'INFO'
 API_WEB_DOCUMENTATION_URL_PREFIX = 'https://esgf.github.io/esgf-vocab/api_documentation'
 API_VERSION = 'v1'
 API_PREFIX = f'/api/{API_VERSION}'
