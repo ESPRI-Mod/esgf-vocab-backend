@@ -17,7 +17,7 @@ services:
               target: /var/www/esgvoc-backend/update
 
     test:
-        extends: latest
+        extends: prod
         image: esgvoc-backend:test
         container_name: test
         ports: !override
