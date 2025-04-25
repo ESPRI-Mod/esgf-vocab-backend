@@ -1,8 +1,9 @@
 name: esgvoc-backend
 
 services:
-    latest:
+    prod:
         image: ghcr.io/espri-mod/esgf-vocab-backend
+        container_name: prod
         ports:
             - 80:9999
         environment:
@@ -18,6 +19,7 @@ services:
     test:
         extends: latest
         image: esgvoc-backend:test
+        container_name: test
         ports: !override
             - 8080:9999
         environment: !override
