@@ -5,7 +5,7 @@ from esgvoc.api.project_specs import DrsType, ProjectSpecs
 from esgvoc.api.search import Item, ItemKind, MatchingTerm
 from fastapi.testclient import TestClient
 
-from esgvoc_backend.naming import API_PREFIX
+from esgvoc_backend.constants import API_PREFIX
 from tests.api_inputs import check_id
 
 _LOCALHOST = 'localhost:9999'

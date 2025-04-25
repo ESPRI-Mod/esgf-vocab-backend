@@ -5,7 +5,7 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from fastapi import APIRouter, Query
 from pydantic import SerializeAsAny
 
-from esgvoc_backend.naming import PROJECTS_PAGE_PREFIX
+from esgvoc_backend.constants import PROJECTS_PAGE_PREFIX
 from esgvoc_backend.utils import check_result, generate_route_desc
 
 router = APIRouter(prefix="/cross")

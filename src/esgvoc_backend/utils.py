@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import HTTPException, status
 
-from esgvoc_backend.naming import API_WEB_DOCUMENTATION_URL_PREFIX
+from esgvoc_backend.constants import API_WEB_DOCUMENTATION_URL_PREFIX
 
 
 def check_result(result: Any | None) -> Any:
