@@ -1,20 +1,39 @@
 name: esgvoc-backend
 
 services:
-    latest:
+    prod:
         image: ghcr.io/espri-mod/esgf-vocab-backend
+        container_name: prod
         ports:
             - 80:9999
         environment:
             - WEB_CONCURRENCY=7
         restart: always
+        secrets:
+            - gh_web_hook_secret
+        volumes:
+            - type: bind
+              source: update
+              target: /var/www/esgvoc-backend/update
 
-    test:
-        extends: latest
-        image: esgvoc-backend:test
+    deploy:
+        extends: prod
+        image: esgvoc-backend:deploy
+        container_name: deploy
         ports: !override
             - 8080:9999
         environment: !override
             - WEB_CONCURRENCY=1
         build: .
-        restart: no
+
+    update:
+        extends: prod
+        container_name: update
+        ports: !override
+            - 8080:9999
+        environment: !override
+            - WEB_CONCURRENCY=1
+
+secrets:
+  gh_web_hook_secret:
+    file: ./gh_web_hook_secret

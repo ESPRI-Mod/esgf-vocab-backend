@@ -1,8 +1,8 @@
 def pytest_addoption(parser):
-    parser.addoption("--host", default=None, type=str, help="run tests against remote host")
+    parser.addoption("--base-url", default=None, type=str, help="change the base url")
 
 
 def pytest_generate_tests(metafunc):
     if 'client' in metafunc.fixturenames:
-        host = metafunc.config.getoption('host')
-        metafunc.parametrize('client', [host], indirect=True)
+        base_url = metafunc.config.getoption('base_url')
+        metafunc.parametrize('client', [base_url], indirect=True)

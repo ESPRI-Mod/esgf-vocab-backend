@@ -7,7 +7,8 @@ from esgvoc.apps.drs.report import DrsGenerationReport, DrsValidationReport
 from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import APIRouter, HTTPException, Path, Query, status
 
-from esgvoc_backend.naming import DRS_GEN_PREFIX, DRS_VAL_PREFIX, generate_route_desc
+from esgvoc_backend.constants import DRS_GEN_PREFIX, DRS_VAL_PREFIX
+from esgvoc_backend.utils import generate_route_desc
 
 router = APIRouter(prefix="/apps/drs")
 

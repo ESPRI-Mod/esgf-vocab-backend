@@ -5,7 +5,7 @@ from esgvoc.api.project_specs import DrsType, ProjectSpecs
 from esgvoc.api.search import Item, ItemKind, MatchingTerm
 from fastapi.testclient import TestClient
 
-from esgvoc_backend.naming import API_PREFIX
+from esgvoc_backend.constants import API_PREFIX
 from tests.api_inputs import check_id
 
 _LOCALHOST = 'localhost:9999'
@@ -85,8 +85,8 @@ def convert_drs_type(drs_type: DrsType) -> str:
 def client_factory(request, router, is_api: bool = True) -> httpx.Client:
     if request.param:
         if is_api:
-            return httpx.Client(base_url=f'https://{request.param}{API_PREFIX}{router.prefix}')
+            return httpx.Client(base_url=f'{request.param}{API_PREFIX}{router.prefix}')
         else:
-            return httpx.Client(base_url=f'https://{request.param}{router.prefix}')
+            return httpx.Client(base_url=f'{request.param}{router.prefix}')
     else:
-        return TestClient(router, base_url=f'https://{_LOCALHOST}{router.prefix}', backend='asyncio')
+        return TestClient(router, base_url=f'http://{_LOCALHOST}{router.prefix}', backend='asyncio')

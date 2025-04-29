@@ -1,9 +1,36 @@
+import logging
+import logging.config
 import time
 
 from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocValueError
 from fastapi import FastAPI, HTTPException, Request, status
 
-from esgvoc_backend import cross, drs, index, naming, projects, search, universe, uris, validation
+from esgvoc_backend import constants, cross, drs, index, projects, search, universe, update, uris, validation
+
+logging_config = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'esgvoc_backend_formatter': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+        },
+    },
+    'handlers': {
+        'esgvoc_backend_stdout': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'esgvoc_backend_formatter',
+        },
+    },
+    'loggers': {
+        'esgvoc_backend': {
+            'handlers': ['esgvoc_backend_stdout'],
+            'level': 'INFO',
+            'propagate': False,
+        }
+    }
+}
+
+logging.config.dictConfig(logging_config)
 
 
 async def add_process_time_header(request: Request, call_next):
@@ -16,12 +43,13 @@ async def add_process_time_header(request: Request, call_next):
 
 def create_app() -> FastAPI:
     app = FastAPI()
-    app.include_router(universe.router, prefix=naming.API_PREFIX)
-    app.include_router(projects.router, prefix=naming.API_PREFIX)
-    app.include_router(drs.router, prefix=naming.API_PREFIX)
-    app.include_router(search.router, prefix=naming.API_PREFIX)
-    app.include_router(validation.router, prefix=naming.API_PREFIX)
-    app.include_router(cross.router, prefix=naming.API_PREFIX)
+    app.include_router(universe.router, prefix=constants.API_PREFIX)
+    app.include_router(projects.router, prefix=constants.API_PREFIX)
+    app.include_router(drs.router, prefix=constants.API_PREFIX)
+    app.include_router(search.router, prefix=constants.API_PREFIX)
+    app.include_router(validation.router, prefix=constants.API_PREFIX)
+    app.include_router(cross.router, prefix=constants.API_PREFIX)
+    app.include_router(update.router, prefix=constants.API_PREFIX)
     app.include_router(uris.router)
     app.include_router(index.router)
     app.middleware("http")(add_process_time_header)
@@ -29,6 +57,9 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+# Configure the ESGVOC library logger.
+logging.getLogger(constants.ESGVOC_ROOT_LOGGER_NAME).setLevel(constants.LOG_LEVEL)
 
 
 @app.exception_handler(EsgvocValueError)

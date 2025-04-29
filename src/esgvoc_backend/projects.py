@@ -6,8 +6,8 @@ from esgvoc.api.project_specs import ProjectSpecs
 from fastapi import APIRouter, Path, Query
 from pydantic import SerializeAsAny
 
-from esgvoc_backend.naming import PROJECTS_PAGE_PREFIX, generate_route_desc
-from esgvoc_backend.utils import check_result
+from esgvoc_backend.constants import PROJECTS_PAGE_PREFIX
+from esgvoc_backend.utils import check_result, generate_route_desc
 
 router = APIRouter(prefix="/projects")
 
