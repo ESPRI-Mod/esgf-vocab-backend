@@ -4,6 +4,7 @@ services:
     prod:
         image: ghcr.io/espri-mod/esgf-vocab-backend
         container_name: prod
+        user: "${UID}:${GID}"
         ports:
             - 80:9999
         environment:
@@ -20,6 +21,7 @@ services:
         extends: prod
         image: esgvoc-backend:deploy
         container_name: deploy
+        user: "${UID}:${GID}"
         ports: !override
             - 8080:9999
         environment: !override
@@ -29,6 +31,7 @@ services:
     update:
         extends: prod
         container_name: update
+        user: "${UID}:${GID}"
         ports: !override
             - 8080:9999
         environment: !override
