@@ -4,7 +4,7 @@ services:
     prod:
         image: ghcr.io/espri-mod/esgf-vocab-backend
         container_name: prod
-        user: "${UID}:${GID}"
+        user: "${UID-1000}:${GID-1000}"
         ports:
             - 80:9999
         environment:
@@ -15,23 +15,24 @@ services:
         volumes:
             - type: bind
               source: update
-              target: /var/www/esgvoc-backend/update
+              target: /home/docker/esgvoc-backend/update
 
     deploy:
         extends: prod
         image: esgvoc-backend:deploy
         container_name: deploy
-        user: "${UID}:${GID}"
+        user: "${UID-1000}:${GID-1000}"
         ports: !override
             - 8080:9999
         environment: !override
             - WEB_CONCURRENCY=1
-        build: .
+        build:
+            context: "."
 
     update:
         extends: prod
         container_name: update
-        user: "${UID}:${GID}"
+        user: "${UID-1000}:${GID-1000}"
         ports: !override
             - 8080:9999
         environment: !override
