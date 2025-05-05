@@ -15,7 +15,7 @@ services:
         volumes:
             - type: bind
               source: update
-              target: /home/docker/esgvoc-backend/update
+              target: /home/docker/esgvoc-backend/deployment/update
 
     deploy:
         extends: prod
