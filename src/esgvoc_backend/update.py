@@ -26,6 +26,9 @@ if GH_WEB_HOOK_SECRET_FILE_PATH.exists():
 else:
     _LOGGER.error('missing GitHub web hook secret (route update is disabled)')
 
+if not UPDATE_DIR_PATH.exists():
+    _LOGGER.error(f'missing update directory expected at location: {UPDATE_DIR_PATH}')
+
 
 def check_signature(raw_payload: bytes, signature: str, secret: str) -> bool:
     hash_object = hmac.new(secret.encode('utf-8'), msg=raw_payload, digestmod=hashlib.sha256)
