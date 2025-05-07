@@ -9,7 +9,7 @@ services:
             - 80:9999
         environment:
             - WEB_CONCURRENCY=7
-            - GH_WEB_HOOK_SECRET_FILE="/run/secrets/gh_web_hook_secret"
+            - GH_WEB_HOOK_SECRET_FILE=/run/secrets/gh_web_hook_secret
         secrets:
             - gh_web_hook_secret
         volumes:
