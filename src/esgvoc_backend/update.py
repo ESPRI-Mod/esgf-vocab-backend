@@ -2,6 +2,7 @@ import hashlib
 import hmac
 import json
 import logging
+import os
 from datetime import datetime
 from pathlib import Path, PurePath
 from typing import Annotated
@@ -10,9 +11,7 @@ from fastapi import APIRouter, Header, HTTPException, Request, status
 
 BRANCH_NAME: str = 'esgvoc'
 FILE_OF_INTEREST_SUFFIX = '.json'
-# Not a hard coded secret:
-GH_WEB_HOOK_SECRET_FILE_NAME = 'gh_web_hook_secret'  # noqa: S105
-GH_WEB_HOOK_SECRET_FILE_PATH = Path(f'/run/secrets/{GH_WEB_HOOK_SECRET_FILE_NAME}')
+GH_WEB_HOOK_SECRET_FILE_PATH = Path(os.environ['GH_WEB_HOOK_SECRET_FILE'])
 UPDATE_DIR_PATH = Path('deployment/update')
 UPDATE_FILE_PATH = UPDATE_DIR_PATH.joinpath('mark')
 _LOGGER = logging.getLogger(__name__)
