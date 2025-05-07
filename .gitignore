@@ -21,6 +21,6 @@ tmp*
 # Others
 *.py[oc]
 .coverage
-gh_web_hook_secret
+.env
 update
 update_test

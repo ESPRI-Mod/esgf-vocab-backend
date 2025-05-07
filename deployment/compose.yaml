@@ -4,39 +4,43 @@ services:
     prod:
         image: ghcr.io/espri-mod/esgf-vocab-backend
         container_name: prod
-        user: "${UID}:${GID}"
+        user: "2000:2000"
         ports:
             - 80:9999
         environment:
             - WEB_CONCURRENCY=7
-        restart: always
+            - GH_WEB_HOOK_SECRET_FILE=/run/secrets/gh_web_hook_secret
         secrets:
             - gh_web_hook_secret
         volumes:
             - type: bind
               source: update
-              target: /var/www/esgvoc-backend/update
+              target: /home/docker/esgvoc-backend/deployment/update
+        restart: always
 
     deploy:
         extends: prod
         image: esgvoc-backend:deploy
         container_name: deploy
-        user: "${UID}:${GID}"
+        user: "2000:2000"
         ports: !override
             - 8080:9999
         environment: !override
             - WEB_CONCURRENCY=1
-        build: .
+        build:
+            context: "."
+        restart: no
 
     update:
         extends: prod
         container_name: update
-        user: "${UID}:${GID}"
+        user: "2000:2000"
         ports: !override
             - 8080:9999
         environment: !override
             - WEB_CONCURRENCY=1
+        restart: no
 
 secrets:
   gh_web_hook_secret:
-    file: ./gh_web_hook_secret
+    environment: GH_WEB_HOOK_SECRET

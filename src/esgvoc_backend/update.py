@@ -2,6 +2,7 @@ import hashlib
 import hmac
 import json
 import logging
+import os
 from datetime import datetime
 from pathlib import Path, PurePath
 from typing import Annotated
@@ -10,21 +11,26 @@ from fastapi import APIRouter, Header, HTTPException, Request, status
 
 BRANCH_NAME: str = 'esgvoc'
 FILE_OF_INTEREST_SUFFIX = '.json'
-# Not a hard coded secret:
-GH_WEB_HOOK_SECRET_FILE_NAME = 'gh_web_hook_secret'  # noqa: S105
-GH_WEB_HOOK_SECRET_FILE_PATH = Path(f'/run/secrets/{GH_WEB_HOOK_SECRET_FILE_NAME}')
-UPDATE_DIR_PATH = Path('update')
+UPDATE_DIR_PATH = Path('deployment/update')
 UPDATE_FILE_PATH = UPDATE_DIR_PATH.joinpath('mark')
+GH_WEB_HOOK_SECRET_FILE_VAR_ENV = 'GH_WEB_HOOK_SECRET_FILE'  # noqa: S105
 _LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
 GH_WEB_HOOK_SECRET: str | None = None
-if GH_WEB_HOOK_SECRET_FILE_PATH.exists():
-    with open(GH_WEB_HOOK_SECRET_FILE_PATH, 'r') as file:
-        GH_WEB_HOOK_SECRET = file.read()
+if GH_WEB_HOOK_SECRET_FILE_VAR_ENV in os.environ:
+    GH_WEB_HOOK_SECRET_FILE_PATH = Path(os.environ[GH_WEB_HOOK_SECRET_FILE_VAR_ENV])
+    if GH_WEB_HOOK_SECRET_FILE_PATH.exists():
+        with open(GH_WEB_HOOK_SECRET_FILE_PATH, 'r') as file:
+            GH_WEB_HOOK_SECRET = file.read()
+    else:
+        _LOGGER.error('missing GitHub web hook secret file: update route is disabled')
 else:
-    _LOGGER.error('missing GitHub web hook secret (route update is disabled)')
+    _LOGGER.error('missing Github web hook var env: update route is disabled')
+
+if not UPDATE_DIR_PATH.exists():
+    _LOGGER.error(f'missing update directory (expected at location: {UPDATE_DIR_PATH}): route update is disabled')
 
 
 def check_signature(raw_payload: bytes, signature: str, secret: str) -> bool:
@@ -113,11 +119,11 @@ def check_payload(raw_payload: bytes | None, event_type: str | None,
 async def update(request: Request,
                  x_hub_signature_256: Annotated[str | None, Header()] = None,
                  x_github_event: Annotated[str | None, Header()] = None) -> None:
-    if GH_WEB_HOOK_SECRET:
+    if GH_WEB_HOOK_SECRET and UPDATE_DIR_PATH.exists():
         raw_payload = await request.body()
-        payload = json.loads(raw_payload)
-        _LOGGER.info(f'web hook payload: {payload}')
         if check_payload(raw_payload, x_github_event, x_hub_signature_256, GH_WEB_HOOK_SECRET):
+            payload = json.loads(raw_payload)
+            _LOGGER.info(f'web hook payload: {payload}')
             _LOGGER.info('checks passed')
             if UPDATE_FILE_PATH.exists():
                 _LOGGER.info('update file already exists (skip)')
@@ -130,4 +136,4 @@ async def update(request: Request,
         else:
             _LOGGER.info('ignore')
     else:
-        _LOGGER.error('missing GitHub web hook secret (route disable)')
+        _LOGGER.error('update route disable')
