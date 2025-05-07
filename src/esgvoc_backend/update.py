@@ -25,12 +25,12 @@ if GH_WEB_HOOK_SECRET_FILE_VAR_ENV in os.environ:
         with open(GH_WEB_HOOK_SECRET_FILE_PATH, 'r') as file:
             GH_WEB_HOOK_SECRET = file.read()
     else:
-        _LOGGER.error('missing GitHub web hook secret file (route update is disabled)')
+        _LOGGER.error('missing GitHub web hook secret file: update route is disabled')
 else:
-    _LOGGER.error('missing Github web hook var env (route update is disabled)')
+    _LOGGER.error('missing Github web hook var env: update route is disabled')
 
 if not UPDATE_DIR_PATH.exists():
-    _LOGGER.error(f'missing update directory expected at location: {UPDATE_DIR_PATH}')
+    _LOGGER.error(f'missing update directory (expected at location: {UPDATE_DIR_PATH}): route update is disabled')
 
 
 def check_signature(raw_payload: bytes, signature: str, secret: str) -> bool:
@@ -119,7 +119,7 @@ def check_payload(raw_payload: bytes | None, event_type: str | None,
 async def update(request: Request,
                  x_hub_signature_256: Annotated[str | None, Header()] = None,
                  x_github_event: Annotated[str | None, Header()] = None) -> None:
-    if GH_WEB_HOOK_SECRET:
+    if GH_WEB_HOOK_SECRET and UPDATE_DIR_PATH.exists():
         raw_payload = await request.body()
         if check_payload(raw_payload, x_github_event, x_hub_signature_256, GH_WEB_HOOK_SECRET):
             payload = json.loads(raw_payload)
@@ -136,4 +136,4 @@ async def update(request: Request,
         else:
             _LOGGER.info('ignore')
     else:
-        _LOGGER.error('missing GitHub web hook secret (route disable)')
+        _LOGGER.error('update route disable')
