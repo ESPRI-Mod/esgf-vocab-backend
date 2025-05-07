@@ -118,9 +118,9 @@ async def update(request: Request,
                  x_github_event: Annotated[str | None, Header()] = None) -> None:
     if GH_WEB_HOOK_SECRET:
         raw_payload = await request.body()
-        payload = json.loads(raw_payload)
-        _LOGGER.info(f'web hook payload: {payload}')
         if check_payload(raw_payload, x_github_event, x_hub_signature_256, GH_WEB_HOOK_SECRET):
+            payload = json.loads(raw_payload)
+            _LOGGER.info(f'web hook payload: {payload}')
             _LOGGER.info('checks passed')
             if UPDATE_FILE_PATH.exists():
                 _LOGGER.info('update file already exists (skip)')
