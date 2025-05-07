@@ -2,8 +2,8 @@ FROM python:3.12-alpine AS esgvoc-backend
 
 RUN apk update && apk upgrade && apk add git
 
-ARG UID=1000 # Default value.
-ARG GID=1000 # Default value.
+ARG UID=2000 # Default value.
+ARG GID=2000 # Default value.
 ARG USER="docker" # Default value.
 ARG GROUP="${USER}"
 RUN addgroup -S -g ${GID} "${GROUP}" && adduser -S -u ${UID} -G "${GROUP}" "${USER}"
