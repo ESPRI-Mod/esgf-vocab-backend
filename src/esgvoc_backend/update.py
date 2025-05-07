@@ -11,19 +11,23 @@ from fastapi import APIRouter, Header, HTTPException, Request, status
 
 BRANCH_NAME: str = 'esgvoc'
 FILE_OF_INTEREST_SUFFIX = '.json'
-GH_WEB_HOOK_SECRET_FILE_PATH = Path(os.environ['GH_WEB_HOOK_SECRET_FILE'])
 UPDATE_DIR_PATH = Path('deployment/update')
 UPDATE_FILE_PATH = UPDATE_DIR_PATH.joinpath('mark')
+GH_WEB_HOOK_SECRET_FILE_VAR_ENV = 'GH_WEB_HOOK_SECRET_FILE'  # noqa: S105
 _LOGGER = logging.getLogger(__name__)
 
 router = APIRouter()
 
 GH_WEB_HOOK_SECRET: str | None = None
-if GH_WEB_HOOK_SECRET_FILE_PATH.exists():
-    with open(GH_WEB_HOOK_SECRET_FILE_PATH, 'r') as file:
-        GH_WEB_HOOK_SECRET = file.read()
+if GH_WEB_HOOK_SECRET_FILE_VAR_ENV in os.environ:
+    GH_WEB_HOOK_SECRET_FILE_PATH = Path(os.environ[GH_WEB_HOOK_SECRET_FILE_VAR_ENV])
+    if GH_WEB_HOOK_SECRET_FILE_PATH.exists():
+        with open(GH_WEB_HOOK_SECRET_FILE_PATH, 'r') as file:
+            GH_WEB_HOOK_SECRET = file.read()
+    else:
+        _LOGGER.error('missing GitHub web hook secret file (route update is disabled)')
 else:
-    _LOGGER.error('missing GitHub web hook secret (route update is disabled)')
+    _LOGGER.error('missing Github web hook var env (route update is disabled)')
 
 if not UPDATE_DIR_PATH.exists():
     _LOGGER.error(f'missing update directory expected at location: {UPDATE_DIR_PATH}')
