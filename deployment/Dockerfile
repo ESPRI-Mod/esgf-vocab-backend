@@ -1,4 +1,4 @@
-FROM python:3.10-alpine AS esgvoc-backend
+FROM python:3.13-alpine AS esgvoc-backend
 
 RUN apk update && apk upgrade && apk add git
 
