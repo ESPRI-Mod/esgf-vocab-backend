@@ -14,7 +14,9 @@ license = "CECILL-2.1"
 dependencies = [
     "esgvoc @ git+https://github.com/ESGF/esgf-vocab@integration",
     "fastapi>=0.115.8",
-    "uvicorn>=0.34.0",
+    "gunicorn>=23.0.0",
+    "httptools>=0.6.4",
+    "uvicorn-worker>=0.3.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
@@ -44,6 +46,7 @@ dev = [
     "wily>=1.25.0",
     "flake8>=7.1.2",
     "pyright>=1.1.396",
+    "uvicorn>=0.34.0",
 ]
 
 [tool.pytest.ini_options]

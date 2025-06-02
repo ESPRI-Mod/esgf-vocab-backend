@@ -4,6 +4,7 @@ import time
 
 from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocValueError
 from fastapi import FastAPI, HTTPException, Request, status
+from uvicorn_worker import UvicornWorker
 
 from esgvoc_backend import constants, cross, drs, index, projects, search, universe, update, uris, validation
 
@@ -70,3 +71,10 @@ async def esgvoc_value_error_handler(_: Request, e: EsgvocValueError):
 @app.exception_handler(EsgvocNotFoundError)
 async def esgvoc_not_found_error_handler(_: Request, e: EsgvocNotFoundError):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
+
+
+# When running with GUnicorn and Uvicorn worker,
+# the default uvloop causes this error: "Error while closing socket [Errno 9] Bad file descriptor".
+# Fix is to stick the classical with asyncio loop.
+class EsgvocUvicornWorker(UvicornWorker):
+    CONFIG_KWARGS = {"loop": "asyncio"}
