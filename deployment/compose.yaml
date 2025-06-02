@@ -8,7 +8,7 @@ services:
         ports:
             - 80:9999
         environment:
-            - WEB_CONCURRENCY=7
+            - GUNICORN_CMD_ARGS=--workers=5 --timeout=10
             - GH_WEB_HOOK_SECRET_FILE=/run/secrets/gh_web_hook_secret
         secrets:
             - gh_web_hook_secret
@@ -26,7 +26,7 @@ services:
         ports: !override
             - 8080:9999
         environment: !override
-            - WEB_CONCURRENCY=1
+            - GUNICORN_CMD_ARGS=--workers=1 --timeout=10
         build:
             context: "."
         restart: no
@@ -38,7 +38,7 @@ services:
         ports: !override
             - 8080:9999
         environment: !override
-            - WEB_CONCURRENCY=1
+            - GUNICORN_CMD_ARGS=--workers=1 --timeout=10
         restart: no
 
 secrets:

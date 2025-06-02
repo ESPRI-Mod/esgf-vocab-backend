@@ -15,5 +15,5 @@ def check_result(result: Any | None) -> Any:
 def generate_route_desc(*url_postfixes: str) -> str:
     result = 'API documentation '
     for url_postfix in url_postfixes:
-        result += f'[{url_postfix.split('.')[-1]}]({API_WEB_DOCUMENTATION_URL_PREFIX}/{url_postfix}), '
+        result += f"[{url_postfix.split('.')[-1]}]({API_WEB_DOCUMENTATION_URL_PREFIX}/{url_postfix}), "
     return result[: -2] + '.'
