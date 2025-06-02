@@ -1,36 +1,10 @@
 import logging
-import logging.config
 import time
 
 from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocValueError
 from fastapi import FastAPI, HTTPException, Request, status
 
 from esgvoc_backend import constants, cross, drs, index, projects, search, universe, update, uris, validation
-
-logging_config = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'esgvoc_backend_formatter': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
-        },
-    },
-    'handlers': {
-        'esgvoc_backend_stdout': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'esgvoc_backend_formatter',
-        },
-    },
-    'loggers': {
-        'esgvoc_backend': {
-            'handlers': ['esgvoc_backend_stdout'],
-            'level': 'INFO',
-            'propagate': False,
-        }
-    }
-}
-
-logging.config.dictConfig(logging_config)
 
 
 async def add_process_time_header(request: Request, call_next):
