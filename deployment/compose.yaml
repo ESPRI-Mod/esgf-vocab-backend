@@ -5,10 +5,8 @@ services:
         image: ghcr.io/espri-mod/esgf-vocab-backend
         container_name: prod
         user: "2000:2000"
-        ports:
-            - 80:9999
         environment:
-            - WEB_CONCURRENCY=7
+            - GUNICORN_CMD_ARGS=--workers=5 --bind=0.0.0.0:80 --timeout=10
             - GH_WEB_HOOK_SECRET_FILE=/run/secrets/gh_web_hook_secret
         secrets:
             - gh_web_hook_secret
@@ -23,10 +21,8 @@ services:
         image: esgvoc-backend:deploy
         container_name: deploy
         user: "2000:2000"
-        ports: !override
-            - 8080:9999
         environment: !override
-            - WEB_CONCURRENCY=1
+            - GUNICORN_CMD_ARGS=--workers=1 --bind=0.0.0.0:8080 --timeout=10
         build:
             context: "."
         restart: no
@@ -35,10 +31,8 @@ services:
         extends: prod
         container_name: update
         user: "2000:2000"
-        ports: !override
-            - 8080:9999
         environment: !override
-            - WEB_CONCURRENCY=1
+            - GUNICORN_CMD_ARGS=--workers=1 --bind=0.0.0.0:8080 --timeout=10
         restart: no
 
 secrets:
