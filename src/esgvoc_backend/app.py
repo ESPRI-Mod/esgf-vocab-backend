@@ -1,4 +1,3 @@
-import logging
 import time
 
 from esgvoc.core.exceptions import EsgvocNotFoundError, EsgvocValueError
@@ -31,9 +30,6 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
-# Configure the ESGVOC library logger.
-logging.getLogger(constants.ESGVOC_ROOT_LOGGER_NAME).setLevel(constants.LOG_LEVEL)
 
 
 @app.exception_handler(EsgvocValueError)
