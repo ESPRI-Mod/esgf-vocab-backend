@@ -17,4 +17,4 @@ RUN pip --no-cache-dir install . # Install packages/scripts in every one path. S
 USER ${UID}
 RUN esgvoc install
 
-CMD ["gunicorn", "-k", "uvicorn_worker.UvicornWorker", "esgvoc_backend.app:app"]
+CMD ["gunicorn", "-k", "uvicorn_worker.UvicornWorker", "--bind=0.0.0.0:9999", "esgvoc_backend.app:app"]
