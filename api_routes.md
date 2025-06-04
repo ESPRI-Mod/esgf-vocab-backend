@@ -14,6 +14,7 @@ GET /api/v1/universe/data_descriptors                                      => ge
 GET /api/v1/universe/data_descriptors/{data_descriptor_id}                 => get_data_descriptor_in_universe
 GET /api/v1/universe/data_descriptors/{data_descriptor_id}/terms           => get_all_terms_in_data_descriptor
 GET /api/v1/universe/data_descriptors/{data_descriptor_id}/terms/{term_id} => get_term_in_data_descriptor
+GET /api/v1/universe/suggested/terms                                         => Backend only
 
 ## Projects
 
