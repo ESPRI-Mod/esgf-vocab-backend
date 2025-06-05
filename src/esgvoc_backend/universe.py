@@ -5,6 +5,7 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from fastapi import APIRouter, Path, Query
 from pydantic import SerializeAsAny
 
+from esgvoc_backend.cache import SUGGESTED_TERMS_OF_UNIVERSE, SuggestedTerm
 from esgvoc_backend.constants import UNIVERSE_PAGE_PREFIX
 from esgvoc_backend.utils import check_result, generate_route_desc
 
@@ -76,3 +77,8 @@ async def get_term_in_data_descriptor(
                                                   term_id=term_id,
                                                   selected_term_fields=selected_term_fields)
     return check_result(result)
+
+
+@router.get("/suggested/terms", summary="Get the suggested terms of the universe per data descriptors")
+async def get_suggested_terms_in_universe() -> list[SuggestedTerm]:
+    return SUGGESTED_TERMS_OF_UNIVERSE

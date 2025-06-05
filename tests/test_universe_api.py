@@ -11,11 +11,11 @@ def client(request):
     return client_factory(request, router)
 
 
-def test_get_terms_in_universe(client, get_param) -> None:
+def test_get_terms_in_universe(client) -> None:
     url = '/terms'
     params = None
     select = True
-    _test_get(client, url, params, get_param.term_id, select)
+    _test_get(client, url, params, None, select)
 
 
 def test_get_term_in_universe(client, get_param) -> None:
@@ -51,3 +51,11 @@ def test_get_term_in_data_descriptor(client, get_param) -> None:
     params = None
     select = True
     _test_get(client, url, params, get_param.term_id, select)
+
+
+def test_get_suggested_terms_in_universe(client) -> None:
+    url = '/suggested/terms'
+    params = None
+    select = False
+    result = _test_get(client, url, params, None, select)
+    assert len(result) > 300

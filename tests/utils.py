@@ -1,3 +1,5 @@
+from typing import Any
+
 import httpx
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
@@ -45,7 +47,7 @@ def instantiate_from_json(json_obj: list| dict | str) -> str | DataDescriptor | 
 
 def _test_get(client: httpx.Client, url: str, params: dict | None,
               id: str | None, select: bool,
-              kind: ItemKind | None = None, parent_id: str | None = None) -> None:
+              kind: ItemKind | None = None, parent_id: str | None = None) -> Any:
     result = client.get(url=url, params=params)
     result.raise_for_status()
     json_result = result.json()
@@ -68,6 +70,8 @@ def _test_get(client: httpx.Client, url: str, params: dict | None,
                 assert len(item) == 4
         else:
             assert len(json_result) == 4
+    return json_result
+
 
 def convert_drs_type(drs_type: DrsType) -> str:
     match drs_type:

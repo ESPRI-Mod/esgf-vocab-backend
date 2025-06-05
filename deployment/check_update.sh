@@ -99,7 +99,7 @@ if [[ -f "${UPDATE_MARK_FILE_PATH}" ]] ; then
   if [ ${?} -ne 0 ] ; then die "updating data of ${DOCKER_PROD_SERVICE_NAME} service" "${output}" ; fi
 
   echo "restarts ${DOCKER_PROD_SERVICE_NAME} service"
-  output="$(docker restart ${DOCKER_PROD_SERVICE_NAME} 2>&1)"
+  output="$(docker exec -it ${DOCKER_PROD_SERVICE_NAME} sh -c 'kill -HUP 1' 2>&1)" # It is always PID 1 .
   if [ ${?} -ne 0 ] ; then die "restarting ${DOCKER_PROD_SERVICE_NAME} service" "${output}" ; fi
 
   echo "deletes update mark file"
