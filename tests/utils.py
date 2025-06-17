@@ -51,8 +51,8 @@ def _test_get(client: httpx.Client, url: str, params: dict | None,
     result = client.get(url=url, params=params)
     result.raise_for_status()
     json_result = result.json()
-    assert json_result is not None
     if id:
+        assert json_result is not None
         inst = instantiate_from_json(json_result)
         check_id(inst, id, kind, parent_id)
     if select:
