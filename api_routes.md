@@ -3,8 +3,13 @@ WEB API ROUTES
 
 ## URI
 
-GET /resource/universe/{data_descriptor_id}/{term_id}
-GET /resource/{project_id}/{collection_id}/{term_id}
+GET /resource/universe/{data_descriptor_id}/{term_id} => Backend only: get term in cache.
+GET /resource/{project_id}/{collection_id}/{term_id}  => Backend only: get term in cache.
+
+## Docs
+
+GET /api/v1/docs         => Backend only: get swagger generated documentation.
+GET /api/v1/openapi.json => Backend only: get OpenAPI schema.
 
 ## Universe
 

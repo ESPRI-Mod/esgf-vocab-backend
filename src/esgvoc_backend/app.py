@@ -15,7 +15,7 @@ async def add_process_time_header(request: Request, call_next):
 
 
 def create_app() -> FastAPI:
-    app = FastAPI()
+    app = FastAPI(docs_url=constants.SWAGGER_URL, openapi_url=constants.OPEN_API_URL)
     app.include_router(universe.router, prefix=constants.API_PREFIX)
     app.include_router(projects.router, prefix=constants.API_PREFIX)
     app.include_router(drs.router, prefix=constants.API_PREFIX)

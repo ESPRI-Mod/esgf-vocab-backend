@@ -4,6 +4,8 @@ API_WEB_DOCUMENTATION_URL_PREFIX = 'https://esgf.github.io/esgf-vocab/api_docume
 API_VERSION = 'v1'
 API_PREFIX = f'/api/{API_VERSION}'
 URI_PREFIX = '/resource'
+SWAGGER_URL = f'{API_PREFIX}/docs'
+OPEN_API_URL = f'{API_PREFIX}/openapi.json'
 
 # Prefix for the API Web documentation of the route.
 UNIVERSE_PAGE_PREFIX = 'universe.html#esgvoc.api.universe'
