@@ -23,7 +23,7 @@ def create_app() -> FastAPI:
     app.include_router(validation.router, prefix=constants.API_PREFIX)
     app.include_router(cross.router, prefix=constants.API_PREFIX)
     app.include_router(update.router, prefix=constants.API_PREFIX)
-    app.include_router(uris.router)
+    app.include_router(uris.router, prefix=constants.URI_PREFIX)
     app.include_router(index.router)
     app.middleware("http")(add_process_time_header)
     return app
