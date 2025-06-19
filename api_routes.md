@@ -3,8 +3,8 @@ WEB API ROUTES
 
 ## URI
 
-GET /universe/{data_descriptor_id}/{term_id}
-GET /{project_id}/{collection_id}/{term_id}
+GET /resource/universe/{data_descriptor_id}/{term_id}
+GET /resource/{project_id}/{collection_id}/{term_id}
 
 ## Universe
 
@@ -14,7 +14,7 @@ GET /api/v1/universe/data_descriptors                                      => ge
 GET /api/v1/universe/data_descriptors/{data_descriptor_id}                 => get_data_descriptor_in_universe
 GET /api/v1/universe/data_descriptors/{data_descriptor_id}/terms           => get_all_terms_in_data_descriptor
 GET /api/v1/universe/data_descriptors/{data_descriptor_id}/terms/{term_id} => get_term_in_data_descriptor
-GET /api/v1/universe/suggested/terms                                         => Backend only
+GET /api/v1/universe/suggested/terms                                       => Backend only
 
 ## Projects
 
