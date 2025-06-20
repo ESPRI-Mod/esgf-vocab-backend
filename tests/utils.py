@@ -7,7 +7,7 @@ from esgvoc.api.project_specs import DrsType, ProjectSpecs
 from esgvoc.api.search import Item, ItemKind, MatchingTerm
 from fastapi.testclient import TestClient
 
-from esgvoc_backend.constants import API_PREFIX
+from esgvoc_backend.constants import API_PREFIX, URI_PREFIX
 from tests.api_inputs import check_id
 
 _LOCALHOST = 'localhost:9999'
@@ -62,6 +62,7 @@ def _test_get(client: httpx.Client, url: str, params: dict | None,
             params = _SELECT
         result = client.get(url=url, params=params)
         json_result = result.json()
+        assert json_result
         if isinstance(json_result, list):
             item = json_result[-1]
             if isinstance(item, list):
@@ -91,6 +92,6 @@ def client_factory(request, router, is_api: bool = True) -> httpx.Client:
         if is_api:
             return httpx.Client(base_url=f'{request.param}{API_PREFIX}{router.prefix}')
         else:
-            return httpx.Client(base_url=f'{request.param}{router.prefix}')
+            return httpx.Client(base_url=f'{request.param}{URI_PREFIX}{router.prefix}')
     else:
         return TestClient(router, base_url=f'http://{_LOCALHOST}{router.prefix}', backend='asyncio')
