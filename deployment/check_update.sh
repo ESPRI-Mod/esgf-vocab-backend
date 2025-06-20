@@ -7,8 +7,8 @@ set -u
 readonly BASE_DIR_PATH="$(pwd)"
 SCRIPT_DIR_PATH="$(dirname $0)"; cd "${SCRIPT_DIR_PATH}"
 readonly SCRIPT_DIR_PATH="$(pwd)"; cd "${BASE_DIR_PATH}"
-readonly DOCKER_PROD_SERVICE_NAME='prod'
-readonly DOCKER_UPDATE_SERVICE_NAME='update'
+readonly DOCKER_PROD_SERVICE_NAME='bprod'
+readonly DOCKER_UPDATE_SERVICE_NAME='bupdate'
 readonly EMAIL_ADDRESSES='sgardoll@ipsl.fr,laurent.troussellier@ipsl.fr'
 readonly EMAIL_SUBJECT_TAG='[ESGVOC BACKEND][UPDATE]'
 readonly UPDATE_MARK_FILE_PATH="${SCRIPT_DIR_PATH}/update/mark"
