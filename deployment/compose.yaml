@@ -1,12 +1,40 @@
-name: esgvoc-backend
+name: esgvoc-stack
 
 services:
-    prod:
-        image: ghcr.io/espri-mod/esgf-vocab-backend
-        container_name: prod
+    haproxy:
+        image: haproxy:lts-alpine
+        container_name: haproxy
         user: "2000:2000"
         ports:
-            - 80:9999
+            - 80:80
+        volumes:
+            - type: bind
+              source: ./haproxy.cfg
+              target: /usr/local/etc/haproxy/haproxy.cfg
+              read_only: true
+        environment:
+            - BACKEND_HOSTNAME=${HOSTNAME}
+            - FRONTEND_HOSTNAME=${HOSTNAME}
+        restart: always
+
+    fprod:
+        image: esgvoc-frontend:prod
+        container_name: frontend_prod
+        user: "2000:2000"
+        ports:
+            - 3000:3000
+        environment:
+            - NUXT_API_URL=http://${HOSTNAME}:9999/api/v1
+        build:
+            context: ../../es-vocab-app
+        restart: always
+
+    bprod:
+        image: ghcr.io/espri-mod/esgf-vocab-backend
+        container_name: backend_prod
+        user: "2000:2000"
+        ports:
+            - 9999:9999
         environment:
             - GUNICORN_CMD_ARGS=--workers=5 --timeout=10
             - GH_WEB_HOOK_SECRET_FILE=/run/secrets/gh_web_hook_secret
@@ -18,10 +46,10 @@ services:
               target: /home/docker/esgvoc-backend/deployment/update
         restart: always
 
-    deploy:
-        extends: prod
+    bdeploy:
+        extends: bprod
         image: esgvoc-backend:deploy
-        container_name: deploy
+        container_name: backend_deploy
         user: "2000:2000"
         ports: !override
             - 8080:9999
@@ -31,9 +59,9 @@ services:
             context: "."
         restart: no
 
-    update:
-        extends: prod
-        container_name: update
+    bupdate:
+        extends: bprod
+        container_name: backend_update
         user: "2000:2000"
         ports: !override
             - 8080:9999
