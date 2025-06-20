@@ -62,6 +62,7 @@ def _test_get(client: httpx.Client, url: str, params: dict | None,
             params = _SELECT
         result = client.get(url=url, params=params)
         json_result = result.json()
+        assert json_result
         if isinstance(json_result, list):
             item = json_result[-1]
             if isinstance(item, list):
