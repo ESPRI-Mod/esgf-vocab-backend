@@ -3,29 +3,35 @@ from typing import Any
 import esgvoc.api.projects as projects
 import esgvoc.api.universe as universe
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.apps.drs.generator import DrsGenerator
+from esgvoc.apps.drs.validator import DrsValidator
+from esgvoc.apps.jsg.json_schema_generator import generate_json_schema
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 
-
-class SuggestedTerm(BaseModel):
-    type: str
-    id: str
+PROJECT_IDS = projects.get_all_projects()
 
 
-SUGGESTED_TERMS_OF_UNIVERSE: list[SuggestedTerm] = list()
-UNIVERSE_CACHE: dict[str, dict[str, tuple[Any, str, DataDescriptor]]] = dict()
-PROJECTS_CACHE: dict[str, dict[str, dict[str, tuple[Any, str, DataDescriptor]]]] = dict()
-COLLECTION_DATA_DESCRIPTOR_MAPPING: dict[str, str] = dict()
+def init_drs_cache() -> tuple[dict[str, DrsValidator], dict[str, DrsGenerator]]:
+    validators: dict[str, DrsValidator] = dict()
+    generators: dict[str, DrsGenerator] = dict()
+    for project_id in PROJECT_IDS:
+        validators[project_id] = DrsValidator(project_id=project_id)
+        generators[project_id] = DrsGenerator(project_id=project_id)
+    return validators, generators
 
 
-def to_str(value: list | dict | Any) -> str:
+VALIDATORS, GENERATORS = init_drs_cache()
+
+
+def _to_str(value: list | dict | Any) -> str:
     result = ""
     if isinstance(value, list):
         match len(value):
             case 0:
                 pass
             case 1:
-                result = to_str(value[0])
+                result = _to_str(value[0])
             case _:
                 result = str(value)
     elif isinstance(value, dict):
@@ -35,48 +41,72 @@ def to_str(value: list | dict | Any) -> str:
     return result
 
 
-def from_json_to_html(term: DataDescriptor) -> str:
+def _from_json_to_html(term: DataDescriptor) -> str:
     result = "<!DOCTYPE html>\n<html>\n<body>\n<ul>\n"
     for key, value in term.model_dump().items():
-        result += f"<li>{key}: {to_str(value)}</li>\n"
+        result += f"<li>{key}: {_to_str(value)}</li>\n"
     result += "</ul>\n</body>\n</html>"
     return result
 
 
-def init_universe_cache() -> None:
+def _init_universe_cache() -> dict[str, dict[str, tuple[Any, str, DataDescriptor]]]:
+    result: dict[str, dict[str, tuple[Any, str, DataDescriptor]]] = dict()
     data_descriptors = universe.get_all_data_descriptors_in_universe()
     for data_descriptor in data_descriptors:
-        UNIVERSE_CACHE[data_descriptor] = dict()
+        result[data_descriptor] = dict()
         for term in universe.get_all_terms_in_data_descriptor(data_descriptor):
-            UNIVERSE_CACHE[data_descriptor][term.id] = jsonable_encoder(term), from_json_to_html(term), term
+            result[data_descriptor][term.id] = jsonable_encoder(term), _from_json_to_html(term), term
+    return result
 
 
-def init_projects_cache() -> None:
-    project_ids = projects.get_all_projects()
-    for project_id in project_ids:
-        PROJECTS_CACHE[project_id] = dict()
+UNIVERSE_CACHE: dict[str, dict[str, tuple[Any, str, DataDescriptor]]] = _init_universe_cache()
+
+
+def _init_projects_cache() -> tuple[dict[str, str],
+                                    dict[str, dict[str, dict[str, tuple[Any, str, DataDescriptor]]]]]:
+    projects_cache: dict[str, dict[str, dict[str, tuple[Any, str, DataDescriptor]]]] = dict()
+    collection_data_descriptor_mapping: dict[str, str] = dict()
+    for project_id in PROJECT_IDS:
+        projects_cache[project_id] = dict()
         with projects._get_project_connection(project_id).create_session() as session:  # type: ignore
             collections = projects._get_all_collections_in_project(session)
             for collection in collections:
-                COLLECTION_DATA_DESCRIPTOR_MAPPING[collection.id] = collection.data_descriptor_id
-                PROJECTS_CACHE[project_id][collection.id] = dict()
+                collection_data_descriptor_mapping[collection.id] = collection.data_descriptor_id
+                projects_cache[project_id][collection.id] = dict()
                 for term in projects._get_all_terms_in_collection(collection, None):
-                    PROJECTS_CACHE[project_id][collection.id][term.id] = jsonable_encoder(term), \
-                                                                         from_json_to_html(term), \
+                    projects_cache[project_id][collection.id][term.id] = jsonable_encoder(term), \
+                                                                         _from_json_to_html(term), \
                                                                          term
+    return collection_data_descriptor_mapping, projects_cache
 
 
-def init_suggested_terms_cache() -> None:  # Execute after init_universe_cache!
+COLLECTION_DATA_DESCRIPTOR_MAPPING, PROJECTS_CACHE = _init_projects_cache()
+
+
+class SuggestedTerm(BaseModel):
+    type: str
+    id: str
+
+
+def _init_suggested_terms_cache() -> list[SuggestedTerm]:  # Execute after init_universe_cache!
+    result: list[SuggestedTerm] = list()
     for data_descriptor_id in UNIVERSE_CACHE.keys():
         count = 0
         for term_id in UNIVERSE_CACHE[data_descriptor_id].keys():
-            SUGGESTED_TERMS_OF_UNIVERSE.append(SuggestedTerm(type=data_descriptor_id,
-                                                             id=term_id))
+            result.append(SuggestedTerm(type=data_descriptor_id, id=term_id))
             count += 1
             if count > 19:
                 break
+    return result
 
 
-init_universe_cache()
-init_projects_cache()
-init_suggested_terms_cache()
+SUGGESTED_TERMS_OF_UNIVERSE: list[SuggestedTerm] = _init_suggested_terms_cache()
+
+
+def _init_stac_json_schemas() -> dict[str, str]:
+    result: dict[str, str] = dict()
+    result['cmip6'] = generate_json_schema('cmip6')
+    return result
+
+
+STAC_JSON_SCHEMAS: dict[str, str] = _init_stac_json_schemas()

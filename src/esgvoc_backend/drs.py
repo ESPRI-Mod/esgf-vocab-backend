@@ -1,31 +1,20 @@
 from typing import Annotated
 
-import esgvoc.api.projects as projects
 from esgvoc.api.project_specs import DrsType
-from esgvoc.apps.drs.generator import DrsGenerator
 from esgvoc.apps.drs.report import DrsGenerationReport, DrsValidationReport
-from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import APIRouter, HTTPException, Path, Query, status
 
+from esgvoc_backend.cache import GENERATORS, VALIDATORS
 from esgvoc_backend.constants import DRS_GEN_PREFIX, DRS_VAL_PREFIX
 from esgvoc_backend.utils import generate_route_desc
 
 router = APIRouter(prefix="/apps/drs")
 
-# [OPTIMIZATION]
-_VALIDATORS: dict[str, DrsValidator] = dict()
-_GENERATORS: dict[str, DrsGenerator] = dict()
-project_ids_available = projects.get_all_projects()
-for project_id in project_ids_available:
-    _VALIDATORS[project_id] = DrsValidator(project_id=project_id)
-    _GENERATORS[project_id] = DrsGenerator(project_id=project_id)
-del project_ids_available
-
 
 def _generate_from_mapping(project_id: str, drs_type: DrsType,
                            mapping: dict[str, str]) -> DrsGenerationReport:
-    if project_id in _GENERATORS:
-        return _GENERATORS[project_id].generate_from_mapping(mapping=mapping, drs_type=drs_type)
+    if project_id in GENERATORS:
+        return GENERATORS[project_id].generate_from_mapping(mapping=mapping, drs_type=drs_type)
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"project '{project_id}' not available")
@@ -33,17 +22,17 @@ def _generate_from_mapping(project_id: str, drs_type: DrsType,
 
 def _generate_from_terms(project_id: str, drs_type: DrsType,
                          terms: list[str]) -> DrsGenerationReport:
-    if project_id in _GENERATORS:
-        return _GENERATORS[project_id].generate_from_bag_of_terms(terms=terms,
-                                                                  drs_type=drs_type)
+    if project_id in GENERATORS:
+        return GENERATORS[project_id].generate_from_bag_of_terms(terms=terms,
+                                                                 drs_type=drs_type)
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"project '{project_id}' not available")
 
 
 def _validate(project_id: str, drs_type: DrsType, expression: str) -> DrsValidationReport:
-    if project_id in _VALIDATORS:
-        return _VALIDATORS[project_id].validate(drs_expression=expression, drs_type=drs_type)
+    if project_id in VALIDATORS:
+        return VALIDATORS[project_id].validate(drs_expression=expression, drs_type=drs_type)
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"project '{project_id}' not available")

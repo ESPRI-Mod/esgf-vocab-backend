@@ -55,15 +55,15 @@ GET /api/v1/validation/term?value&project_id&collection_id&term_id => valid_term
                                                                       valid_term_in_collection +
                                                                       valid_term
 
-## DRS
+## Applications
 
-### Validation
+### DRS validation
 
 GET /api/v1/apps/drs/{project_id}/validation/directory => validate_directory
 GET /api/v1/apps/drs/{project_id}/validation/filename  => validate_file_name
 GET /api/v1/apps/drs/{project_id}/validation/datasetid => validate_dataset_id
 
-### Generation
+### DRS generation
 
 POST /api/v1/apps/drs/{project_id}/generation/mapping/directory => generate_directory_from_mapping
 POST /api/v1/apps/drs/{project_id}/generation/mapping/filename  => generate_file_name_from_mapping
@@ -71,3 +71,7 @@ POST /api/v1/apps/drs/{project_id}/generation/mapping/datasetid => generate_data
 POST /api/v1/apps/drs/{project_id}/generation/terms/directory   => generate_directory_from_bag_of_terms
 POST /api/v1/apps/drs/{project_id}/generation/terms/filename    => generate_file_name_from_bag_of_terms
 POST /api/v1/apps/drs/{project_id}/generation/terms/datasetid   => generate_dataset_id_from_bag_of_terms
+
+### STAC JSON schema generation
+
+GET /api/v1/apps/jsg/{project_id} => generate_json_schema

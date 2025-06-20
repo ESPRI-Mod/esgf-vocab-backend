@@ -1,7 +1,7 @@
 ---
 
 concurrency: 20
-base: 'https://esgvoc.ipsl.fr'
+base: 'http://esgvoc.ipsl.fr'
 iterations: 100
 rampup: 5
 
@@ -77,15 +77,18 @@ plan:
       key: dataset_expression
       value: CMIP6Plus.CMIP.IPSL.MIROC6.amip.r2i2p1f2.ACmon.od550aer.gn
 
+  - name: CMIP6 Stac JSON schema
+    request:
+      url: /api/v1/apps/jsg/cmip6
 
   - name: universe URI
     request:
-      url: /universe/{{ data_descriptor_id }}/{{ term_id }}
+      url: /resource/universe/{{ data_descriptor_id }}/{{ term_id }}
 
 
   - name: project URI
     request:
-      url: /{{ project_id }}/{{ collection_id }}/{{ term_id }}
+      url: /resource/{{ project_id }}/{{ collection_id }}/{{ term_id }}
 
 
   - name: get_all_terms_in_universe
