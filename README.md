@@ -16,7 +16,6 @@ pre-commit install
 
 ```bash
 uv sync
-uv run wily setup
 uv run pre-commit install
 ```
 
