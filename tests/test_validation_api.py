@@ -17,7 +17,8 @@ def client(request):
 
 
 def _test_validation(client: httpx.Client, url: str, params: dict,
-                     query: ValidationExpression, check_in_all_projects: bool = False) -> None:
+                     query: ValidationExpression, check_in_collection: bool = False,
+                     check_in_all_projects: bool = False) -> None:
     results = client.get(url=url, params=params)
     results.raise_for_status()
     json_results = results.json()
@@ -26,7 +27,8 @@ def _test_validation(client: httpx.Client, url: str, params: dict,
         matching_terms = list()
     elif not isinstance(matching_terms, list):
         matching_terms = [matching_terms]
-    check_validation(query, cast(list[MatchingTerm], matching_terms), check_in_all_projects)
+    check_validation(query, cast(list[MatchingTerm], matching_terms), check_in_collection,
+                     check_in_all_projects)
 
 
 def test_valid_term_all_projects(client, val_query) -> None:
@@ -38,7 +40,7 @@ def test_valid_term_all_projects(client, val_query) -> None:
 def test_valid_term_in_project(client, val_query) -> None:
     url = '/term'
     params = {'value': val_query.value, 'project_id': val_query.item.project_id}
-    _test_validation(client=client, url=url, params=params, query=val_query)
+    _test_validation(client=client, url=url, params=params, query=val_query, check_in_collection=True)
 
 
 def test_valid_term_in_collection(client, val_query) -> None:
