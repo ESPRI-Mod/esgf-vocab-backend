@@ -103,10 +103,11 @@ def _init_suggested_terms_cache() -> list[SuggestedTerm]:  # Execute after init_
 SUGGESTED_TERMS_OF_UNIVERSE: list[SuggestedTerm] = _init_suggested_terms_cache()
 
 
-def _init_stac_json_schemas() -> dict[str, str]:
-    result: dict[str, str] = dict()
-    result['cmip6'] = generate_json_schema('cmip6')
+def _init_stac_json_schemas() -> dict[str, dict]:
+    result: dict[str, dict] = dict()
+    for project_id in PROJECT_IDS:
+        result[project_id] = generate_json_schema(project_id)
     return result
 
 
-STAC_JSON_SCHEMAS: dict[str, str] = _init_stac_json_schemas()
+STAC_JSON_SCHEMAS: dict[str, dict] = _init_stac_json_schemas()
