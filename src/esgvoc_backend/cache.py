@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 import esgvoc.api.projects as projects
@@ -6,8 +7,11 @@ from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.apps.drs.generator import DrsGenerator
 from esgvoc.apps.drs.validator import DrsValidator
 from esgvoc.apps.jsg.json_schema_generator import generate_json_schema
+from esgvoc.core.exceptions import EsgvocException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
+
+_LOGGER = logging.getLogger(__name__)
 
 PROJECT_IDS = projects.get_all_projects()
 
@@ -106,7 +110,12 @@ SUGGESTED_TERMS_OF_UNIVERSE: list[SuggestedTerm] = _init_suggested_terms_cache()
 def _init_stac_json_schemas() -> dict[str, dict]:
     result: dict[str, dict] = dict()
     for project_id in PROJECT_IDS:
-        result[project_id] = generate_json_schema(project_id)
+        try:
+            result[project_id] = generate_json_schema(project_id)
+        except EsgvocException as e:
+            msg = f'unable to generate json schema for project {project_id}: {e}'
+            _LOGGER.error(msg)
+            continue
     return result
 
 
