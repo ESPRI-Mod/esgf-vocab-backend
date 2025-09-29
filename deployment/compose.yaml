@@ -52,7 +52,7 @@ services:
         container_name: backend_deploy
         user: "2000:2000"
         ports: !override
-            - 8080:9999
+            - 8085:9999
         environment: !override
             - GUNICORN_CMD_ARGS=--workers=1 --timeout=10
         build:
@@ -64,7 +64,7 @@ services:
         container_name: backend_update
         user: "2000:2000"
         ports: !override
-            - 8080:9999
+            - 8085:9999
         environment: !override
             - GUNICORN_CMD_ARGS=--workers=1 --timeout=10
         restart: no

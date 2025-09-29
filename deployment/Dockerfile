@@ -15,6 +15,6 @@ WORKDIR "/home/docker/esgvoc-backend"
 RUN pip --no-cache-dir install . # Install packages/scripts in every one path. Scripts are in /usr/local/bin
 
 USER ${UID}
-RUN esgvoc install
+RUN esgvoc config add obs4ref
 
 CMD ["gunicorn", "-k", "uvicorn_worker.UvicornWorker", "--bind=0.0.0.0:9999", "esgvoc_backend.app:app"]

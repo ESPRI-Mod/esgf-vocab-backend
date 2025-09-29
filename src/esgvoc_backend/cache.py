@@ -22,6 +22,7 @@ def init_drs_cache() -> tuple[dict[str, DrsValidator], dict[str, DrsGenerator]]:
     for project_id in PROJECT_IDS:
         validators[project_id] = DrsValidator(project_id=project_id)
         generators[project_id] = DrsGenerator(project_id=project_id)
+        _LOGGER.info(f'{project_id} DRS cache loaded')
     return validators, generators
 
 
@@ -60,6 +61,7 @@ def _init_universe_cache() -> dict[str, dict[str, tuple[Any, str, DataDescriptor
         result[data_descriptor] = dict()
         for term in universe.get_all_terms_in_data_descriptor(data_descriptor):
             result[data_descriptor][term.id] = jsonable_encoder(term), _from_json_to_html(term), term
+    _LOGGER.info('universe cache loaded')
     return result
 
 
@@ -81,6 +83,7 @@ def _init_projects_cache() -> tuple[dict[str, str],
                     projects_cache[project_id][collection.id][term.id] = jsonable_encoder(term), \
                                                                          _from_json_to_html(term), \
                                                                          term
+        _LOGGER.info(f'{project_id} cache loaded')
     return collection_data_descriptor_mapping, projects_cache
 
 
@@ -101,6 +104,7 @@ def _init_suggested_terms_cache() -> list[SuggestedTerm]:  # Execute after init_
             count += 1
             if count > 19:
                 break
+    _LOGGER.info('suggested terms cache loaded')
     return result
 
 
@@ -112,8 +116,9 @@ def _init_stac_json_schemas() -> dict[str, dict]:
     for project_id in PROJECT_IDS:
         try:
             result[project_id] = generate_json_schema(project_id)
+            _LOGGER.info(f'{project_id} json schema cache loaded')
         except EsgvocException as e:
-            msg = f'unable to generate json schema for project {project_id}: {e}'
+            msg = f'unable to generate json schema for project {project_id}, skip: {e}'
             _LOGGER.error(msg)
             continue
     return result
