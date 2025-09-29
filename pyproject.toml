@@ -13,7 +13,7 @@ license = "CECILL-2.1"
 
 dependencies = [
     "esgvoc @ git+https://github.com/ESGF/esgf-vocab@main",
-    "fastapi>=0.115.8",
+    "fastapi>=0.115.8,<0.118.0",
     "gunicorn>=23.0.0",
     "httptools>=0.6.4",
     "uvicorn-worker>=0.3.0",
