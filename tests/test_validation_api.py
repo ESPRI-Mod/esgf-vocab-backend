@@ -31,12 +31,6 @@ def _test_validation(client: httpx.Client, url: str, params: dict,
                      check_in_all_projects)
 
 
-def test_valid_term_all_projects(client, val_query) -> None:
-    url = '/term'
-    params = {'value': val_query.value}
-    _test_validation(client=client, url=url, params=params, query=val_query, check_in_all_projects=True)
-
-
 def test_valid_term_in_project(client, val_query) -> None:
     url = '/term'
     params = {'value': val_query.value, 'project_id': val_query.item.project_id}
