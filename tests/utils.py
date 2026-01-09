@@ -66,8 +66,10 @@ def _test_get(client: httpx.Client, url: str, params: dict | None,
         if isinstance(json_result, list):
             item = json_result[-1]
             if isinstance(item, list):
+                print(f"DEBUG: Cross case - item[-1] = {item[-1]}, len = {len(item[-1])}")
                 assert len(item[-1]) == 4  # Cross case.
             else:
+                print(f"DEBUG: Single item case - item = {item}, type = {type(item)}, len = {len(item) if hasattr(item, '__len__') else 'N/A'}")
                 assert len(item) == 4
         else:
             assert len(json_result) == 4
