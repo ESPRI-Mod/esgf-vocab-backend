@@ -43,12 +43,15 @@ async def cross_terms_in_project(
 async def cross_collections_in_project(
     data_descriptor_id: Annotated[str, Query(description="an id of a data descriptor")],
     project_id: Annotated[str | None, Query(description="an id of project")] = None) \
-                                                  -> tuple[str, dict] | list[tuple[str, str, dict]]:
-    result: tuple[str, dict] | list[tuple[str, str, dict]]
+                                                  -> list[tuple[str, str, dict]]:
+    result: list[tuple[str, str, dict]]
     if project_id:
-        tmp = projects.get_collection_from_data_descriptor_in_project(project_id=project_id,
-                                                                      data_descriptor_id=data_descriptor_id)
-        result = check_result(tmp)
+        # get_collection_from_data_descriptor_in_project now returns list[tuple[str, dict]]
+        # Need to convert to list[tuple[str, str, dict]] format: (project_id, collection_id, context)
+        collections = projects.get_collection_from_data_descriptor_in_project(project_id=project_id,
+                                                                              data_descriptor_id=data_descriptor_id)
+        # Convert list[tuple[str, dict]] to list[tuple[str, str, dict]]
+        result = [(project_id, collection_id, context) for collection_id, context in collections]
     else:
         result = projects.get_collection_from_data_descriptor_in_all_projects(data_descriptor_id=data_descriptor_id)
     return result
