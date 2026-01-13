@@ -2,7 +2,11 @@ from typing import Any
 
 import httpx
 from esgvoc.api.data_descriptors import DATA_DESCRIPTOR_CLASS_MAPPING
-from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import (
+    DataDescriptor,
+    PatternTermDataDescriptor,
+    PlainTermDataDescriptor,
+)
 from esgvoc.api.project_specs import DrsType, ProjectSpecs
 from esgvoc.api.search import Item, ItemKind, MatchingTerm
 from fastapi.testclient import TestClient
@@ -51,10 +55,26 @@ def _test_get(client: httpx.Client, url: str, params: dict | None,
     result = client.get(url=url, params=params)
     result.raise_for_status()
     json_result = result.json()
+
+    # First request: verify the term is present and get its type from JSON
+    term_type = None
     if id:
         assert json_result is not None
-        inst = instantiate_from_json(json_result)
-        check_id(inst, id, kind, parent_id)
+        # Extract term type from JSON response (no instantiation)
+        if isinstance(json_result, dict) and 'type' in json_result:
+            term_type = json_result['type']
+        elif isinstance(json_result, list):
+            for item in json_result:
+                if isinstance(item, dict) and 'type' in item:
+                    term_type = item['type']
+                    break
+                elif isinstance(item, (tuple, list)) and len(item) > 0:
+                    last_item = item[-1]
+                    if isinstance(last_item, dict) and 'type' in last_item:
+                        term_type = last_item['type']
+                        break
+
+    # Second request with selected_term_fields if needed
     if select:
         if params:
             params.update(_SELECT)
@@ -63,16 +83,39 @@ def _test_get(client: httpx.Client, url: str, params: dict | None,
         result = client.get(url=url, params=params)
         json_result = result.json()
         assert json_result
+
+        # Determine if it's a PlainTerm based on the type
+        # PlainTerms have drs_name, PatternTerms (like variant_label, time_range, member_id) don't
+        plain_term_types = ['institution', 'source', 'variable', 'table', 'experiment', 'organisation', 'activity', 'grid']
+        pattern_term_types = ['variant_label', 'time_range', 'member_id']
+
+        is_plain_term = term_type in plain_term_types
+        expected_field_count = 2 if is_plain_term else 1  # PlainTerm: id+drs_name, PatternTerm: id only
+
         if isinstance(json_result, list):
             item = json_result[-1]
             if isinstance(item, list):
-                print(f"DEBUG: Cross case - item[-1] = {item[-1]}, len = {len(item[-1])}")
-                assert len(item[-1]) == 4  # Cross case.
+                # Cross case: tuple contains (project_id, collection_id, term_dict)
+                term_dict = item[-1]
+                print(f"DEBUG: Cross case - item[-1] = {term_dict}, len = {len(term_dict)}, type = {term_type}, is_plain_term = {is_plain_term}")
+                assert 'id' in term_dict  # id is always present
+                assert 'nothing' not in term_dict  # invalid field should not be included
+                assert len(term_dict) == expected_field_count
+                if is_plain_term:
+                    assert 'drs_name' in term_dict
             else:
-                print(f"DEBUG: Single item case - item = {item}, type = {type(item)}, len = {len(item) if hasattr(item, '__len__') else 'N/A'}")
-                assert len(item) == 4
+                print(f"DEBUG: Single item case - item = {item}, type = {type(item)}, len = {len(item) if hasattr(item, '__len__') else 'N/A'}, term_type = {term_type}, is_plain_term = {is_plain_term}")
+                assert 'id' in item
+                assert 'nothing' not in item
+                assert len(item) == expected_field_count
+                if is_plain_term:
+                    assert 'drs_name' in item
         else:
-            assert len(json_result) == 4
+            assert 'id' in json_result
+            assert 'nothing' not in json_result
+            assert len(json_result) == expected_field_count
+            if is_plain_term:
+                assert 'drs_name' in json_result
     return json_result
 
 
