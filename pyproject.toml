@@ -12,14 +12,14 @@ authors = [
 license = "CECILL-2.1"
 
 dependencies = [
-    "esgvoc @ git+https://github.com/ESGF/esgf-vocab@main",
+    "esgvoc",
     "fastapi>=0.115.8,<0.118.0",
     "gunicorn>=23.0.0",
     "httptools>=0.6.4",
     "uvicorn-worker>=0.3.0",
 ]
 readme = "README.md"
-requires-python = ">= 3.10"
+requires-python = ">= 3.12"
 
 [build-system]
 requires = ["hatchling==1.26.3"]
@@ -29,6 +29,9 @@ build-backend = "hatchling.build"
 Repository = "https://github.com/ESPRI-Mod/esgf-vocab-backend"
 
 ######## TOOLS ########
+
+[tool.uv.sources]
+esgvoc = { git = "https://github.com/ESGF/esgf-vocab.git", branch = "integration" }
 
 [tool.uv]
 managed = true
@@ -46,6 +49,7 @@ dev = [
     "flake8>=7.1.2",
     "pyright>=1.1.396",
     "uvicorn>=0.34.0",
+    "jupyter-console>=6.6.3",
 ]
 
 [tool.pytest.ini_options]
