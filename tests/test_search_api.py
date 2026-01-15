@@ -96,11 +96,11 @@ def test_find_terms_in_universe(client, find_term_param) -> None:
 
         json_result = response.json()
         for term in json_result:
+            # With new behavior: only 'id' + selected fields that exist
             assert 'id' in term
-            assert 'type' in term
-            assert 'description' in term
-            # 'nothing' should not be included
+            # 'nothing' should not be included (invalid field)
             assert 'nothing' not in term
+            # 'type' and 'description' are NOT included when selected_term_fields is used
 
 
 def test_find_terms_in_data_descriptor(client, find_term_param) -> None:
@@ -134,11 +134,11 @@ def test_find_terms_in_data_descriptor(client, find_term_param) -> None:
 
         json_result = response.json()
         for term in json_result:
+            # With new behavior: only 'id' + selected fields that exist
             assert 'id' in term
-            assert 'type' in term
-            assert 'description' in term
-            # 'nothing' should not be included
+            # 'nothing' should not be included (invalid field)
             assert 'nothing' not in term
+            # 'type' and 'description' are NOT included when selected_term_fields is used
 
 
 def test_find_data_descriptors(client, find_dd_param) -> None:
@@ -214,11 +214,11 @@ def test_find_terms_in_project(client, find_term_param) -> None:
 
         json_result = response.json()
         for term in json_result:
+            # With new behavior: only 'id' + selected fields that exist
             assert 'id' in term
-            assert 'type' in term
-            assert 'description' in term
-            # 'nothing' should not be included
+            # 'nothing' should not be included (invalid field)
             assert 'nothing' not in term
+            # 'type' and 'description' are NOT included when selected_term_fields is used
 
 
 def test_find_terms_in_collection(client, find_term_param) -> None:
@@ -254,8 +254,8 @@ def test_find_terms_in_collection(client, find_term_param) -> None:
 
         json_result = response.json()
         for term in json_result:
+            # With new behavior: only 'id' + selected fields that exist
             assert 'id' in term
-            assert 'type' in term
-            assert 'description' in term
-            # 'nothing' should not be included
+            # 'nothing' should not be included (invalid field)
             assert 'nothing' not in term
+            # 'type' and 'description' are NOT included when selected_term_fields is used

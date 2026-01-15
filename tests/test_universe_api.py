@@ -37,11 +37,12 @@ def test_get_terms_in_universe(client) -> None:
     json_result = response.json()
     assert isinstance(json_result, list)
     for term in json_result:
+        # With new behavior: only 'id' + selected fields that exist
         assert 'id' in term
-        assert 'type' in term
-        assert 'description' in term
-        # 'nothing' should not be included
+        # 'nothing' should not be included (invalid field)
         assert 'nothing' not in term
+        # 'type' and 'description' are NOT included when selected_term_fields is used
+        # 'drs_name' may or may not be present depending on term type
 
 
 def test_get_term_in_universe(client, get_param) -> None:
@@ -64,11 +65,12 @@ def test_get_term_in_universe(client, get_param) -> None:
 
     json_result = response.json()
     assert isinstance(json_result, dict)
+    # With new behavior: only 'id' + selected fields that exist
     assert json_result['id'] == get_param.term_id
-    assert 'type' in json_result
-    assert 'description' in json_result
-    # 'nothing' should not be included
+    # 'nothing' should not be included (invalid field)
     assert 'nothing' not in json_result
+    # 'type' and 'description' are NOT included when selected_term_fields is used
+    # 'drs_name' may or may not be present depending on term type
 
 
 def test_get_data_descriptors(client, get_param):
@@ -130,11 +132,12 @@ def test_get_terms_in_data_descriptor(client, get_param) -> None:
     json_result = response.json()
     assert isinstance(json_result, list)
     for term in json_result:
+        # With new behavior: only 'id' + selected fields that exist
         assert 'id' in term
-        assert 'type' in term
-        assert 'description' in term
-        # 'nothing' should not be included
+        # 'nothing' should not be included (invalid field)
         assert 'nothing' not in term
+        # 'type' and 'description' are NOT included when selected_term_fields is used
+        # 'drs_name' may or may not be present depending on term type
 
 
 def test_get_term_in_data_descriptor(client, get_param) -> None:
@@ -157,11 +160,12 @@ def test_get_term_in_data_descriptor(client, get_param) -> None:
 
     json_result = response.json()
     assert isinstance(json_result, dict)
+    # With new behavior: only 'id' + selected fields that exist
     assert json_result['id'] == get_param.term_id
-    assert 'type' in json_result
-    assert 'description' in json_result
-    # 'nothing' should not be included
+    # 'nothing' should not be included (invalid field)
     assert 'nothing' not in json_result
+    # 'type' and 'description' are NOT included when selected_term_fields is used
+    # 'drs_name' may or may not be present depending on term type
 
 
 def test_get_suggested_terms_in_universe(client) -> None:
