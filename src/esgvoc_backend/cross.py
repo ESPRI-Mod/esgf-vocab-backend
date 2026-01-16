@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from esgvoc.api import projects
-from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
+from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor, DataDescriptorSubSet
 from fastapi import APIRouter, Query
 from pydantic import SerializeAsAny
 
@@ -21,8 +21,8 @@ async def cross_terms_in_project(
     project_id: Annotated[str | None, Query(description="an id of project")] = None,
     selected_term_fields: Annotated[list[str] | None,
                                     Query(description="list of selected term fields, empty or null")] = None) \
-            -> tuple[str, SerializeAsAny[DataDescriptor]] | list[tuple[str, str, SerializeAsAny[DataDescriptor]]]:
-    result: tuple[str, DataDescriptor] | list[tuple[str, str, DataDescriptor]]
+            -> tuple[str, SerializeAsAny[DataDescriptor | DataDescriptorSubSet]] | list[tuple[str, str, SerializeAsAny[DataDescriptor | DataDescriptorSubSet]]]:
+    result: tuple[str, DataDescriptor | DataDescriptorSubSet] | list[tuple[str, str, DataDescriptor | DataDescriptorSubSet]]
     if project_id:
         result = check_result(projects.get_term_from_universe_term_id_in_project(
                                                            project_id=project_id,
