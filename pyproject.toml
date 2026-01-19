@@ -31,7 +31,7 @@ Repository = "https://github.com/ESPRI-Mod/esgf-vocab-backend"
 ######## TOOLS ########
 
 [tool.uv.sources]
-esgvoc = { git = "https://github.com/ESGF/esgf-vocab.git", branch = "integration" }
+esgvoc = { git = "https://github.com/ESGF/esgf-vocab.git", branch = "main" }
 
 [tool.uv]
 managed = true
