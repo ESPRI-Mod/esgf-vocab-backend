@@ -5,7 +5,7 @@ import esgvoc.api.projects as projects
 import esgvoc.api.universe as universe
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.apps.drs.generator import DrsGenerator
-from esgvoc.apps.drs.validator import DrsValidator
+from esgvoc.apps.drs.validator import DrsValidator, EsgvocNotFoundError
 from esgvoc.apps.jsg.json_schema_generator import generate_json_schema
 from esgvoc.core.exceptions import EsgvocException
 from fastapi.encoders import jsonable_encoder
@@ -20,9 +20,13 @@ def init_drs_cache() -> tuple[dict[str, DrsValidator], dict[str, DrsGenerator]]:
     validators: dict[str, DrsValidator] = dict()
     generators: dict[str, DrsGenerator] = dict()
     for project_id in PROJECT_IDS:
-        validators[project_id] = DrsValidator(project_id=project_id)
-        generators[project_id] = DrsGenerator(project_id=project_id)
-        _LOGGER.info(f'{project_id} DRS cache loaded')
+        try:
+            validators[project_id] = DrsValidator(project_id=project_id)
+            generators[project_id] = DrsGenerator(project_id=project_id)
+            _LOGGER.info(f"{project_id} DRS cache loaded")
+        except EsgvocNotFoundError as e:
+            _LOGGER.info(f"{project_id} do NOT HAVE DRS specification")
+
     return validators, generators
 
 
@@ -61,29 +65,31 @@ def _init_universe_cache() -> dict[str, dict[str, tuple[Any, str, DataDescriptor
         result[data_descriptor] = dict()
         for term in universe.get_all_terms_in_data_descriptor(data_descriptor):
             result[data_descriptor][term.id] = jsonable_encoder(term), _from_json_to_html(term), term
-    _LOGGER.info('universe cache loaded')
+    _LOGGER.info("universe cache loaded")
     return result
 
 
 UNIVERSE_CACHE: dict[str, dict[str, tuple[Any, str, DataDescriptor]]] = _init_universe_cache()
 
 
-def _init_projects_cache() -> tuple[dict[str, str],
-                                    dict[str, dict[str, dict[str, tuple[Any, str, DataDescriptor]]]]]:
+def _init_projects_cache() -> tuple[dict[str, str], dict[str, dict[str, dict[str, tuple[Any, str, DataDescriptor]]]]]:
     projects_cache: dict[str, dict[str, dict[str, tuple[Any, str, DataDescriptor]]]] = dict()
     collection_data_descriptor_mapping: dict[str, str] = dict()
     for project_id in PROJECT_IDS:
         projects_cache[project_id] = dict()
-        with projects._get_project_connection(project_id).create_session() as session:  # type: ignore
+        # type: ignore
+        with projects._get_project_connection(project_id).create_session() as session:
             collections = projects._get_all_collections_in_project(session)
             for collection in collections:
                 collection_data_descriptor_mapping[collection.id] = collection.data_descriptor_id
                 projects_cache[project_id][collection.id] = dict()
                 for term in projects._get_all_terms_in_collection(collection, None):
-                    projects_cache[project_id][collection.id][term.id] = jsonable_encoder(term), \
-                                                                         _from_json_to_html(term), \
-                                                                         term
-        _LOGGER.info(f'{project_id} cache loaded')
+                    projects_cache[project_id][collection.id][term.id] = (
+                        jsonable_encoder(term),
+                        _from_json_to_html(term),
+                        term,
+                    )
+        _LOGGER.info(f"{project_id} cache loaded")
     return collection_data_descriptor_mapping, projects_cache
 
 
@@ -95,7 +101,8 @@ class SuggestedTerm(BaseModel):
     id: str
 
 
-def _init_suggested_terms_cache() -> list[SuggestedTerm]:  # Execute after init_universe_cache!
+# Execute after init_universe_cache!
+def _init_suggested_terms_cache() -> list[SuggestedTerm]:
     result: list[SuggestedTerm] = list()
     for data_descriptor_id in UNIVERSE_CACHE.keys():
         count = 0
@@ -104,7 +111,7 @@ def _init_suggested_terms_cache() -> list[SuggestedTerm]:  # Execute after init_
             count += 1
             if count > 19:
                 break
-    _LOGGER.info('suggested terms cache loaded')
+    _LOGGER.info("suggested terms cache loaded")
     return result
 
 
@@ -116,9 +123,9 @@ def _init_stac_json_schemas() -> dict[str, dict]:
     for project_id in PROJECT_IDS:
         try:
             result[project_id] = generate_json_schema(project_id)
-            _LOGGER.info(f'{project_id} json schema cache loaded')
+            _LOGGER.info(f"{project_id} json schema cache loaded")
         except EsgvocException as e:
-            msg = f'unable to generate json schema for project {project_id}, skip: {e}'
+            msg = f"unable to generate json schema for project {project_id}, skip: {e}"
             _LOGGER.error(msg)
             continue
     return result
