@@ -25,7 +25,7 @@ def init_drs_cache() -> tuple[dict[str, DrsValidator], dict[str, DrsGenerator]]:
             generators[project_id] = DrsGenerator(project_id=project_id)
             _LOGGER.info(f"{project_id} DRS cache loaded")
         except EsgvocNotFoundError as e:
-            _LOGGER.info(f"{project_id} do NOT HAVE DRS specification")
+            _LOGGER.info(f"{e}:{project_id} do NOT HAVE DRS specification")
 
     return validators, generators
 

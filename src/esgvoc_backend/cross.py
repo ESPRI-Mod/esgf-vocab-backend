@@ -11,45 +11,65 @@ from esgvoc_backend.utils import check_result, generate_route_desc
 router = APIRouter(prefix="/cross")
 
 
-@router.get("/terms",
-            summary="Get the corresponding project terms",
-            description=generate_route_desc(f'{PROJECTS_PAGE_PREFIX}.get_term_from_universe_term_id_in_project',
-                                            f'{PROJECTS_PAGE_PREFIX}.get_term_from_universe_term_id_in_all_projects'))
+@router.get(
+    "/terms",
+    summary="Get the corresponding project terms",
+    description=generate_route_desc(
+        f"{PROJECTS_PAGE_PREFIX}.get_term_from_universe_term_id_in_project",
+        f"{PROJECTS_PAGE_PREFIX}.get_term_from_universe_term_id_in_all_projects",
+    ),
+)
 async def cross_terms_in_project(
     data_descriptor_id: Annotated[str, Query(description="an id of a data descriptor")],
     universe_term_id: Annotated[str, Query(description="an id of a universe term")],
     project_id: Annotated[str | None, Query(description="an id of project")] = None,
-    selected_term_fields: Annotated[list[str] | None,
-                                    Query(description="list of selected term fields, empty or null")] = None) \
-            -> tuple[str, SerializeAsAny[DataDescriptor | DataDescriptorSubSet]] | list[tuple[str, str, SerializeAsAny[DataDescriptor | DataDescriptorSubSet]]]:
-    result: tuple[str, DataDescriptor | DataDescriptorSubSet] | list[tuple[str, str, DataDescriptor | DataDescriptorSubSet]]
+    selected_term_fields: Annotated[
+        list[str] | None, Query(description="list of selected term fields, empty or null")
+    ] = None,
+) -> (
+    tuple[str, SerializeAsAny[DataDescriptor | DataDescriptorSubSet]]
+    | list[tuple[str, str, SerializeAsAny[DataDescriptor | DataDescriptorSubSet]]]
+):
+    result: (
+        tuple[str, DataDescriptor | DataDescriptorSubSet] | list[tuple[str, str, DataDescriptor | DataDescriptorSubSet]]
+    )
     if project_id:
-        result = check_result(projects.get_term_from_universe_term_id_in_project(
-                                                           project_id=project_id,
-                                                           data_descriptor_id=data_descriptor_id,
-                                                           universe_term_id=universe_term_id,
-                                                           selected_term_fields=selected_term_fields))
+        result = check_result(
+            projects.get_term_from_universe_term_id_in_project(
+                project_id=project_id,
+                data_descriptor_id=data_descriptor_id,
+                universe_term_id=universe_term_id,
+                selected_term_fields=selected_term_fields,
+            )
+        )
     else:
-        result = projects.get_term_from_universe_term_id_in_all_projects(data_descriptor_id=data_descriptor_id,
-                                                                         universe_term_id=universe_term_id,
-                                                                         selected_term_fields=selected_term_fields)
+        result = projects.get_term_from_universe_term_id_in_all_projects(
+            data_descriptor_id=data_descriptor_id,
+            universe_term_id=universe_term_id,
+            selected_term_fields=selected_term_fields,
+        )
     return result
 
 
-@router.get("/collections",
-            summary="Get the corresponding collection",
-            description=generate_route_desc(f'{PROJECTS_PAGE_PREFIX}.get_collection_from_data_descriptor_in_project',
-                                            f'{PROJECTS_PAGE_PREFIX}.get_collection_from_data_descriptor_in_all_projects'))  # noqa
+@router.get(
+    "/collections",
+    summary="Get the corresponding collection",
+    description=generate_route_desc(
+        f"{PROJECTS_PAGE_PREFIX}.get_collection_from_data_descriptor_in_project",
+        f"{PROJECTS_PAGE_PREFIX}.get_collection_from_data_descriptor_in_all_projects",
+    ),
+)  # noqa
 async def cross_collections_in_project(
     data_descriptor_id: Annotated[str, Query(description="an id of a data descriptor")],
-    project_id: Annotated[str | None, Query(description="an id of project")] = None) \
-                                                  -> list[tuple[str, str, dict]]:
+    project_id: Annotated[str | None, Query(description="an id of project")] = None,
+) -> list[tuple[str, str, dict]]:
     result: list[tuple[str, str, dict]]
     if project_id:
         # get_collection_from_data_descriptor_in_project now returns list[tuple[str, dict]]
         # Need to convert to list[tuple[str, str, dict]] format: (project_id, collection_id, context)
-        collections = projects.get_collection_from_data_descriptor_in_project(project_id=project_id,
-                                                                              data_descriptor_id=data_descriptor_id)
+        collections = projects.get_collection_from_data_descriptor_in_project(
+            project_id=project_id, data_descriptor_id=data_descriptor_id
+        )
         # Convert list[tuple[str, dict]] to list[tuple[str, str, dict]]
         result = [(project_id, collection_id, context) for collection_id, context in collections]
     else:
