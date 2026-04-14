@@ -3,7 +3,7 @@ import logging.config
 
 from esgvoc_backend import constants
 
-__version__ = "3.0.0"
+__version__ = "3.1.0"
 
 logging_config = {
     'version': 1,
