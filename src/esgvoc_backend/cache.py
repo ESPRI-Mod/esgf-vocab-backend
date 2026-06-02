@@ -5,7 +5,8 @@ import esgvoc.api.projects as projects
 import esgvoc.api.universe as universe
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from esgvoc.apps.drs.generator import DrsGenerator
-from esgvoc.apps.drs.validator import DrsValidator, EsgvocNotFoundError
+from esgvoc.apps.drs.validator import DrsValidator
+from esgvoc.core.exceptions import EsgvocNotFoundError
 from esgvoc.apps.jsg.json_schema_generator import generate_json_schema
 from esgvoc.core.exceptions import EsgvocException
 from fastapi.encoders import jsonable_encoder
@@ -77,18 +78,22 @@ def _init_projects_cache() -> tuple[dict[str, str], dict[str, dict[str, dict[str
     collection_data_descriptor_mapping: dict[str, str] = dict()
     for project_id in PROJECT_IDS:
         projects_cache[project_id] = dict()
-        # type: ignore
-        with projects._get_project_connection(project_id).create_session() as session:
-            collections = projects._get_all_collections_in_project(session)
-            for collection in collections:
-                collection_data_descriptor_mapping[collection.id] = collection.data_descriptor_id
-                projects_cache[project_id][collection.id] = dict()
-                for term in projects._get_all_terms_in_collection(collection, None):
-                    projects_cache[project_id][collection.id][term.id] = (
-                        jsonable_encoder(term),
-                        _from_json_to_html(term),
-                        term,
-                    )
+        collection_ids = projects.get_all_collections_in_project(project_id=project_id)
+        for collection_id in collection_ids:
+            dd_id = projects.get_data_descriptor_from_collection_in_project(
+                project_id=project_id, collection_id=collection_id
+            )
+            if dd_id:
+                collection_data_descriptor_mapping[collection_id] = dd_id
+            projects_cache[project_id][collection_id] = dict()
+            for term in projects.get_all_terms_in_collection(
+                project_id=project_id, collection_id=collection_id
+            ):
+                projects_cache[project_id][collection_id][term.id] = (
+                    jsonable_encoder(term),
+                    _from_json_to_html(term),
+                    term,
+                )
         _LOGGER.info(f"{project_id} cache loaded")
     return collection_data_descriptor_mapping, projects_cache
 

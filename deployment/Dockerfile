@@ -1,6 +1,6 @@
 FROM python:3.13-alpine AS esgvoc-backend
 
-RUN apk --no-cache update && apk --no-cache upgrade && apk --no-cache add git
+RUN apk --no-cache update && apk --no-cache upgrade
 
 ARG UID=2000 # Default value.
 ARG GID=2000 # Default value.
@@ -15,10 +15,14 @@ WORKDIR "/home/docker/esgvoc-backend"
 RUN pip --no-cache-dir install . # Install packages/scripts in every one path. Scripts are in /usr/local/bin
 
 USER ${UID}
-RUN esgvoc config add obs4ref
-RUN esgvoc config add input4mip
-RUN esgvoc config add cordex-cmip6
-RUN esgvoc config add cmip7
-RUN esgvoc config add emd
+RUN esgvoc use universe@latest
+RUN esgvoc use cmip6@latest
+RUN esgvoc use cmip6plus@latest
+RUN esgvoc use cmip7@latest
+RUN esgvoc use cordex-cmip5@latest
+RUN esgvoc use cordex-cmip6@latest
+RUN esgvoc use emd@latest
+RUN esgvoc use input4mips@latest
+RUN esgvoc use obs4ref@latest
 
 CMD ["gunicorn", "-k", "uvicorn_worker.UvicornWorker", "--bind=0.0.0.0:9999", "esgvoc_backend.app:app"]
