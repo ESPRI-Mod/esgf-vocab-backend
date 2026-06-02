@@ -16,11 +16,13 @@ RUN pip --no-cache-dir install . # Install packages/scripts in every one path. S
 
 USER ${UID}
 RUN esgvoc use universe@latest
-RUN esgvoc use obs4ref@latest
-RUN esgvoc use input4mips@latest
+RUN esgvoc use cmip6@latest
+RUN esgvoc use cmip6plus@latest
+RUN esgvoc use cmip7@latest
 RUN esgvoc use cordex-cmip5@latest
 RUN esgvoc use cordex-cmip6@latest
-RUN esgvoc use cmip7@latest
 RUN esgvoc use emd@latest
+RUN esgvoc use input4mips@latest
+RUN esgvoc use obs4ref@latest
 
 CMD ["gunicorn", "-k", "uvicorn_worker.UvicornWorker", "--bind=0.0.0.0:9999", "esgvoc_backend.app:app"]
