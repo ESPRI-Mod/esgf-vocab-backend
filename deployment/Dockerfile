@@ -17,7 +17,7 @@ RUN pip --no-cache-dir install . # Install packages/scripts in every one path. S
 USER ${UID}
 RUN esgvoc use universe@latest
 RUN esgvoc use obs4ref@latest
-RUN esgvoc use input4mip@latest
+RUN esgvoc use input4mips@latest
 RUN esgvoc use cordex-cmip5@latest
 RUN esgvoc use cordex-cmip6@latest
 RUN esgvoc use cmip7@latest

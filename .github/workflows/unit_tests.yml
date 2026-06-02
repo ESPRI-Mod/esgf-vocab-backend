@@ -26,7 +26,7 @@ jobs:
         run: |
           uv run esgvoc use universe@latest
           uv run esgvoc use obs4ref@latest
-          uv run esgvoc use input4mip@latest
+          uv run esgvoc use input4mips@latest
           uv run esgvoc use cordex-cmip5@latest
           uv run esgvoc use cordex-cmip6@latest
           uv run esgvoc use cmip7@latest
