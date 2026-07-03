@@ -122,3 +122,20 @@ async def get_term_in_collection(
         project_id=project_id, collection_id=collection_id, term_id=term_id, selected_term_fields=selected_term_fields
     )
     return check_result(result)
+
+
+@router.get(
+    "/{project_id}/collections/{collection_id}/model",
+    summary="Get the Pydantic model JSON schema of a given collection",
+    description=generate_route_desc(f"{PROJECTS_PAGE_PREFIX}.get_model_from_collection"),
+)
+async def get_model_from_collection(
+    project_id: Annotated[str, Path(description="an id of a project")],
+    collection_id: Annotated[str, Path(description="an id of a collection")],
+    version: Annotated[str | None, Query(description="a project version")] = None,
+) -> dict:
+    model = projects.get_model_from_collection(
+        project_id=project_id, collection_id=collection_id, version=version
+    )
+    result = check_result(model)
+    return result.model_json_schema()

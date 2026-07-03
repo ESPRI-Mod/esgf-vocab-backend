@@ -1,4 +1,5 @@
 import pytest
+from fastapi import HTTPException
 
 from esgvoc_backend import universe
 from tests.api_inputs import get_param  # noqa: F401
@@ -166,6 +167,35 @@ def test_get_term_in_data_descriptor(client, get_param) -> None:
     assert 'nothing' not in json_result
     # 'type' and 'description' are NOT included when selected_term_fields is used
     # 'drs_name' may or may not be present depending on term type
+
+
+def test_get_model_from_data_descriptor(client, get_param) -> None:
+    """Test GET /universe/data_descriptors/{data_descriptor_id}/model returns JSON schema."""
+    url = f'/data_descriptors/{get_param.data_descriptor_id}/model'
+
+    response = client.get(url=url)
+    assert response.status_code == 200
+
+    json_result = response.json()
+    assert isinstance(json_result, dict)
+    # Single model: has title/properties/type at top level
+    # Union model: has $defs and oneOf/anyOf at top level
+    is_single_model = 'title' in json_result
+    if is_single_model:
+        assert 'properties' in json_result
+        assert json_result['type'] == 'object'
+    else:
+        assert '$defs' in json_result
+        assert 'oneOf' in json_result or 'anyOf' in json_result
+
+
+def test_get_model_from_data_descriptor_not_found(client) -> None:
+    """Test GET /universe/data_descriptors/{data_descriptor_id}/model raises 404 for unknown id."""
+    url = '/data_descriptors/nonexistent/model'
+
+    with pytest.raises(HTTPException) as exc_info:
+        client.get(url=url)
+    assert exc_info.value.status_code == 404
 
 
 def test_get_suggested_terms_in_universe(client) -> None:

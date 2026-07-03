@@ -3,7 +3,7 @@ from typing import Annotated
 import esgvoc.api.universe as universe
 from esgvoc.api.data_descriptors.data_descriptor import DataDescriptor
 from fastapi import APIRouter, Path, Query
-from pydantic import SerializeAsAny
+from pydantic import SerializeAsAny, TypeAdapter
 
 from esgvoc_backend.cache import SUGGESTED_TERMS_OF_UNIVERSE, SuggestedTerm
 from esgvoc_backend.constants import UNIVERSE_PAGE_PREFIX
@@ -77,6 +77,18 @@ async def get_term_in_data_descriptor(
                                                   term_id=term_id,
                                                   selected_term_fields=selected_term_fields)
     return check_result(result)
+
+
+@router.get("/data_descriptors/{data_descriptor_id}/model",
+            summary="Get the Pydantic model JSON schema of a given data descriptor",
+            description=generate_route_desc(f'{UNIVERSE_PAGE_PREFIX}.get_model_from_data_descriptor'))
+async def get_model_from_data_descriptor(
+    data_descriptor_id: Annotated[str, Path(description="an id of a data descriptor")]) -> dict:
+    model = universe.get_model_from_data_descriptor(data_descriptor_id=data_descriptor_id)
+    result = check_result(model)
+    if hasattr(result, 'model_json_schema'):
+        return result.model_json_schema()
+    return TypeAdapter(result).json_schema()
 
 
 @router.get("/suggested/terms", summary="Get the suggested terms of the universe per data descriptors")

@@ -1,4 +1,5 @@
 import pytest
+from fastapi import HTTPException
 
 from esgvoc_backend import projects
 from tests.api_inputs import get_param  # noqa: F401
@@ -174,6 +175,30 @@ def test_get_term_in_collection(client, get_param) -> None:
     # 'nothing' should not be included (invalid field)
     assert "nothing" not in json_result
     # 'type' and 'description' are NOT included when selected_term_fields is used
+
+
+def test_get_model_from_collection(client, get_param) -> None:
+    """Test GET /projects/{project_id}/collections/{collection_id}/model returns JSON schema."""
+    url = f"/{get_param.project_id}/collections/{get_param.collection_id}/model"
+
+    response = client.get(url=url)
+    assert response.status_code == 200
+
+    json_result = response.json()
+    assert isinstance(json_result, dict)
+    assert "title" in json_result
+    assert "properties" in json_result
+    assert "type" in json_result
+    assert json_result["type"] == "object"
+
+
+def test_get_model_from_collection_not_found(client) -> None:
+    """Test GET /projects/{project_id}/collections/{collection_id}/model raises 404 for unknown ids."""
+    url = "/nonexistent/collections/nonexistent/model"
+
+    with pytest.raises(HTTPException) as exc_info:
+        client.get(url=url)
+    assert exc_info.value.status_code == 404
 
 
 def test_get_collection_in_project(client, get_param) -> None:
