@@ -187,7 +187,7 @@ GET_PARAMETERS: list[Parameter] = [
     Parameter("cmip6", "variable", "variable_id", "airmass"),
     Parameter("cmip6", "table", "table_id", "eyr"),
     Parameter("cmip6", "experiment", "experiment_id", "ssp245-aer"),
-    Parameter("cmip6", "variable", "variable_id", "prw2h"),
+    Parameter("cmip6", "variable", "variable_id", "prsn2h"),
     Parameter("cmip6", "member_id", "member_id", "subexp_variant"),
 ]
 
@@ -214,7 +214,7 @@ FIND_TERM_PARAMETERS: list[FindExpression] = [
     FindExpression("ipsl paris", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
     FindExpression("ipsl* paris*", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
     FindExpression("ipsl* AND paris*", PARAMETERS["cmip6plus_ipsl"], ItemKind.TERM),
-    FindExpression("prw* NOT prw", PARAMETERS["cmip6_prw2h"], ItemKind.TERM),
+    FindExpression("prsn* NOT prsn", PARAMETERS["cmip6_prsn2h"], ItemKind.TERM),
 ]
 
 # FindExpression('', PARAMETERS[''], ItemKind.DATA_DESCRIPTOR),
