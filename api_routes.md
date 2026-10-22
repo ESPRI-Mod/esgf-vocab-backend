@@ -45,7 +45,7 @@ GET /api/v1/search/items/projects?expression&project_id               => find_it
 
 GET /api/v1/cross/collections?project_id&data_descriptor_id   => get_collection_from_data_descriptor_in_all_projects +
                                                                  get_collection_from_data_descriptor_in_project
-GET /api/v1/cross/terms?project_id&data_descriptor_id&term_id => get_term_from_universe_term_id_in_project +
+GET /api/v1/cross/terms?project_id&data_descriptor_id&term_id => get_terms_from_universe_term_id_in_project +
                                                                  get_term_from_universe_term_id_in_all_projects
 
 ## Validation
