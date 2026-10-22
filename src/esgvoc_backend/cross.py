@@ -15,7 +15,7 @@ router = APIRouter(prefix="/cross")
     "/terms",
     summary="Get the corresponding project terms",
     description=generate_route_desc(
-        f"{PROJECTS_PAGE_PREFIX}.get_term_from_universe_term_id_in_project",
+        f"{PROJECTS_PAGE_PREFIX}.get_terms_from_universe_term_id_in_project",
         f"{PROJECTS_PAGE_PREFIX}.get_term_from_universe_term_id_in_all_projects",
     ),
 )
@@ -27,15 +27,17 @@ async def cross_terms_in_project(
         list[str] | None, Query(description="list of selected term fields, empty or null")
     ] = None,
 ) -> (
-    tuple[str, SerializeAsAny[DataDescriptor | DataDescriptorSubSet]]
+    list[tuple[str, SerializeAsAny[DataDescriptor | DataDescriptorSubSet]]]
     | list[tuple[str, str, SerializeAsAny[DataDescriptor | DataDescriptorSubSet]]]
 ):
     result: (
-        tuple[str, DataDescriptor | DataDescriptorSubSet] | list[tuple[str, str, DataDescriptor | DataDescriptorSubSet]]
+        list[tuple[str, DataDescriptor | DataDescriptorSubSet]]
+        | list[tuple[str, str, DataDescriptor | DataDescriptorSubSet]]
     )
     if project_id:
+        # One (collection_id, term) per collection of the project that uses the universe term.
         result = check_result(
-            projects.get_term_from_universe_term_id_in_project(
+            projects.get_terms_from_universe_term_id_in_project(
                 project_id=project_id,
                 data_descriptor_id=data_descriptor_id,
                 universe_term_id=universe_term_id,
